@@ -1,139 +1,95 @@
 body {
   font-family: system-ui, sans-serif;
+  background: #f4f6f8;
   margin: 0;
-  padding: 0;
-  background: #f5f7fa;
-  color: #222;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-header {
-  background: #007bff;
-  color: #fff;
-  padding: 1rem;
-  text-align: center;
-  font-size: 1.3rem;
-}
-
-main {
-  flex: 1;
-  padding: 1rem;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-h2 {
-  color: #007bff;
-  border-bottom: 2px solid #007bff33;
-  padding-bottom: 0.3rem;
-}
-
-section {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.input-row {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  align-items: center;
-}
-
-input, select, button {
-  font-size: 1rem;
-  padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  flex: 1;
-}
-
-button {
-  background: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-button:hover {
-  background: #005fc7;
-}
-
-button.danger {
-  background: #dc3545;
-}
-
-button.danger:hover {
-  background: #a71d2a;
-}
-
-#deviceList {
-  list-style: none;
-  padding: 0;
-}
-
-#deviceList li {
-  background: #f0f3f8;
-  margin: 0.3rem 0;
-  padding: 0.5rem;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#resultBox {
-  text-align: center;
-  margin-top: 1rem;
-}
-
-#mainResult {
-  font-size: 1.6rem;
-  font-weight: bold;
-  color: #007bff;
-}
-
-#subResult {
-  font-size: 1rem;
-  color: #444;
-  margin-bottom: 1rem;
-}
-
-#progressBar {
-  width: 100%;
-  height: 22px;
-  background: #ddd;
-  border-radius: 12px;
-  overflow: hidden;
-  margin: 0.5rem 0;
-}
-
-#progressFill {
-  height: 100%;
-  width: 0%;
-  transition: width 0.5s ease;
-}
-
-#progressText {
-  font-size: 0.9rem;
   color: #333;
 }
 
-.export-section .button-row {
-  display: flex;
-  gap: 0.5rem;
+header, footer {
+  text-align: center;
+  background: #0073e6;
+  color: white;
+  padding: 20px;
 }
 
-footer {
-  text-align: center;
-  font-size: 0.8rem;
-  color: #555;
-  padding: 1rem;
+h1 {
+  margin: 0;
 }
+
+main.app-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+/* 🧩 Sektionen */
+.app-section {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.app-section h2 {
+  color: #0073e6;
+  margin-bottom: 12px;
+}
+
+/* 🪶 Formular & Buttons */
+input, select {
+  width: 100%;
+  margin: 6px 0;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #0073e6;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #005bb5;
+}
+
+button.danger {
+  background: #e63946;
+}
+
+button.danger:hover {
+  background: #c82333;
+}
+
+/* 🪶 Ergebnisbereich */
+#resultDisplay {
+  background: #eef6ff;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+/* 🖥️ Responsive Layout */
+@media (max-width: 1200px) {
+  main.app-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 800px) {
+  main.app-container {
+    grid-template-columns: 1fr;
+  }
+}
+
 

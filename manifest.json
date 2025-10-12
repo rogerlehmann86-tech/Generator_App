@@ -1,18 +1,20 @@
 {
   "name": "Generator Leistungsrechner",
-  "short_name": "GeneratorApp",
+  "short_name": "GenCalc",
+  "description": "Berechnet die passende Generatorleistung basierend auf deinen Geräten.",
+  "lang": "de-CH",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f5f7fa",
-  "theme_color": "#007bff",
+  "background_color": "#0073e6",
+  "theme_color": "#0073e6",
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
