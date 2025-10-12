@@ -1,3 +1,6 @@
+document.addEventListener("DOMContentLoaded", () => {
+  // Dein gesamter bisheriger JavaScript-Code hier hinein
+});
 // 📦 Gerätekatalog
 const presetDevices = [
   { name: "Bohrmaschine", watt: 800, pf: 0.9 },
