@@ -1,44 +1,55 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Generator Leistungsrechner</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0073e6">
   <link rel="icon" href="icon-192.png">
 </head>
-
 <body>
   <header>
     <h1>🔌 Generator Leistungsrechner</h1>
-    <p>Berechne die passende Generatorleistung für deine Geräte – online & offline!</p>
+    <p>Berechne die optimale Generatorgröße für deine Anforderungen</p>
   </header>
 
-  <main class="app-container">
-    <section class="app-section" id="add-device">
+  <main class="grid-container">
+    <!-- Gerät hinzufügen -->
+    <section class="card">
       <h2>Gerät hinzufügen</h2>
-      <select id="presetSelect">
-        <option value="">🔽 Gerät aus Liste wählen...</option>
+
+      <label for="category">Kategorie:</label>
+      <select id="category">
+        <option value="">Kategorie wählen...</option>
       </select>
 
-      <input type="text" id="name" placeholder="Gerätename">
+      <label for="presetSelect">Gerät:</label>
+      <select id="presetSelect">
+        <option value="">Gerät auswählen...</option>
+      </select>
+
+      <input type="text" id="name" placeholder="Gerätename (optional)">
       <input type="number" id="watt" placeholder="Leistung (W)">
       <input type="number" id="pf" placeholder="Leistungsfaktor (PF)" value="1" step="0.1" min="0.1" max="1">
+
       <label><input type="checkbox" id="startSurge"> Anlaufstrom berücksichtigen</label>
       <input type="number" id="startMult" placeholder="Start-Multiplikator" value="1.0" step="0.1" min="1">
+
       <button id="addDevice">➕ Gerät hinzufügen</button>
     </section>
 
-    <section class="app-section" id="device-list">
+    <!-- Geräteliste -->
+    <section class="card">
       <h2>Geräteliste</h2>
       <ul id="deviceList"></ul>
       <button id="clearDevices" class="danger">🗑️ Liste löschen</button>
     </section>
 
-    <section class="app-section" id="results">
-      <h2>Empfohlene Generatorleistung</h2>
+    <!-- Ergebnis -->
+    <section class="card">
+      <h2>Ergebnis</h2>
       <div id="resultDisplay">Noch keine Geräte hinzugefügt.</div>
       <canvas id="loadChart"></canvas>
       <button id="exportCSV">⬇️ Daten exportieren</button>
@@ -49,10 +60,12 @@
     <p>© 2025 Lehmann GT – Generator Leistungsrechner</p>
   </footer>
 
+  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="app.js"></script>
 
   <script>
+    // Service Worker nur registrieren, wenn nicht embedded (vermeidet iframe-Fehler)
     if ('serviceWorker' in navigator && window.top === window.self) {
       navigator.serviceWorker.register('service-worker.js')
         .then(() => console.log("✅ Service Worker aktiv"))
@@ -61,3 +74,4 @@
   </script>
 </body>
 </html>
+

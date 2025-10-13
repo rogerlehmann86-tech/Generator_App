@@ -1,95 +1,81 @@
 body {
   font-family: system-ui, sans-serif;
-  background: #f4f6f8;
+  background: #f5f8fb;
   margin: 0;
-  color: #333;
+  color: #222;
 }
 
-header, footer {
-  text-align: center;
+header {
   background: #0073e6;
   color: white;
-  padding: 20px;
+  text-align: center;
+  padding: 1rem;
 }
 
-h1 {
-  margin: 0;
-}
-
-main.app-container {
+.grid-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  padding: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
 }
 
-/* 🧩 Sektionen */
-.app-section {
-  background: #fff;
-  border-radius: 16px;
-  padding: 16px;
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.app-section h2 {
-  color: #0073e6;
-  margin-bottom: 12px;
+h1, h2 {
+  margin: 0 0 0.5rem;
 }
 
-/* 🪶 Formular & Buttons */
-input, select {
+input, select, button {
   width: 100%;
-  margin: 6px 0;
-  padding: 8px;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  border-radius: 8px;
 }
 
 button {
-  width: 100%;
-  margin-top: 10px;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
   background: #0073e6;
   color: white;
-  font-weight: bold;
+  border: none;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: 0.2s;
 }
 
-button:hover {
-  background: #005bb5;
+button:hover { background: #005bb5; }
+
+button.danger { background: #cc0000; }
+button.danger:hover { background: #a00000; }
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-button.danger {
-  background: #e63946;
+ul li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid #eee;
 }
 
-button.danger:hover {
-  background: #c82333;
+footer {
+  text-align: center;
+  font-size: 0.8rem;
+  padding: 1rem;
+  color: #666;
 }
 
-/* 🪶 Ergebnisbereich */
-#resultDisplay {
-  background: #eef6ff;
-  padding: 12px;
-  border-radius: 8px;
-  font-weight: 500;
-  margin-bottom: 10px;
-}
-
-/* 🖥️ Responsive Layout */
-@media (max-width: 1200px) {
-  main.app-container {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 800px) {
-  main.app-container {
-    grid-template-columns: 1fr;
-  }
+canvas {
+  margin-top: 1rem;
+  width: 100% !important;
+  max-height: 300px;
 }
 
 
