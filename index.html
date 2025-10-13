@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generator Leistungsrechner</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0073e6">
   <link rel="icon" href="icon-192.png">
@@ -15,12 +13,10 @@
 <body>
   <header>
     <h1>🔌 Generator Leistungsrechner</h1>
-    <p>Berechne die passende Generatorleistung für deine Geräte – auch offline!</p>
+    <p>Berechne die passende Generatorleistung für deine Geräte – online & offline!</p>
   </header>
 
   <main class="app-container">
-
-    <!-- 🟦 Geräte hinzufügen -->
     <section class="app-section" id="add-device">
       <h2>Gerät hinzufügen</h2>
       <select id="presetSelect">
@@ -30,38 +26,34 @@
       <input type="text" id="name" placeholder="Gerätename">
       <input type="number" id="watt" placeholder="Leistung (W)">
       <input type="number" id="pf" placeholder="Leistungsfaktor (PF)" value="1" step="0.1" min="0.1" max="1">
-
       <label><input type="checkbox" id="startSurge"> Anlaufstrom berücksichtigen</label>
       <input type="number" id="startMult" placeholder="Start-Multiplikator" value="1.0" step="0.1" min="1">
-
       <button id="addDevice">➕ Gerät hinzufügen</button>
     </section>
 
-    <!-- 🟩 Geräteliste -->
     <section class="app-section" id="device-list">
       <h2>Geräteliste</h2>
       <ul id="deviceList"></ul>
       <button id="clearDevices" class="danger">🗑️ Liste löschen</button>
     </section>
 
-    <!-- 🟨 Ergebnis -->
     <section class="app-section" id="results">
       <h2>Empfohlene Generatorleistung</h2>
       <div id="resultDisplay">Noch keine Geräte hinzugefügt.</div>
+      <canvas id="loadChart"></canvas>
       <button id="exportCSV">⬇️ Daten exportieren</button>
     </section>
-
   </main>
 
   <footer>
     <p>© 2025 Lehmann GT – Generator Leistungsrechner</p>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="app.js"></script>
 
-  <!-- Service Worker aktivieren -->
   <script>
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && window.top === window.self) {
       navigator.serviceWorker.register('service-worker.js')
         .then(() => console.log("✅ Service Worker aktiv"))
         .catch(err => console.log("❌ Service Worker Fehler:", err));
