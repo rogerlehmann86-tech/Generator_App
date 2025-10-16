@@ -1,19 +1,25 @@
-const CACHE_VERSION = 'v3.0.0';
-const CACHE_NAME = `generator-app-${CACHE_VERSION}`;
-const FILES_TO_CACHE = ['/', '/index.html', '/style.css', '/app.js', '/manifest.json'];
+const CACHE_NAME = 'generator-app-v4_6';
+const FILES_TO_CACHE = [
+  '/',
+  '/index.html',
+  '/style.css',
+  '/app.js',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/lehmann-logo-white.png'
+];
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(FILES_TO_CACHE)).then(() => self.skipWaiting()));
+self.addEventListener('install', evt => {
+  evt.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE)));
 });
 
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))));
-  self.clients.claim();
+self.addEventListener('activate', evt => {
+  evt.waitUntil(
+    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
+  );
 });
 
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
-  e.respondWith(caches.match(e.request).then(res => res || fetch(e.request).then(netRes => {
-    return caches.open(CACHE_NAME).then(c => { c.put(e.request, netRes.clone()); return netRes; });
-  })));
+self.addEventListener('fetch', evt => {
+  evt.respondWith(caches.match(evt.request).then(resp => resp || fetch(evt.request)));
 });

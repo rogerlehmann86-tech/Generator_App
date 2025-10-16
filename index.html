@@ -1,50 +1,79 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Generator Leistungsrechner</title>
-  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="icon" href="icon-192.png">
 </head>
 <body>
-  <header>
+  <header class="app-header">
+    <img src="lehmann-logo-white.png" alt="Lehmann GT Logo" class="brand-logo" />
     <h1>Generator Leistungsrechner</h1>
-    <p>Berechne die optimale Generatorgröße für deine Geräteanforderungen</p>
+    <p>Berechne die optimale Generatorgröße für deine Anwendung</p>
   </header>
 
-  <main>
-    <section id="deviceInput">
+  <main class="grid-container">
+    <!-- Gerät hinzufügen -->
+    <section class="card">
       <h2>Gerät hinzufügen</h2>
-      <input type="text" id="deviceName" placeholder="Gerätename">
-      <input type="number" id="devicePower" placeholder="Leistung (W)">
-      <input type="number" id="devicePF" placeholder="Leistungsfaktor (PF)" step="0.01" value="1.0">
-      <input type="number" id="deviceStart" placeholder="Anlaufstromfaktor" step="0.1" value="1.0">
+
+      <label for="category">Kategorie:</label>
+      <select id="category">
+        <option value="">Kategorie wählen...</option>
+      </select>
+
+      <label for="presetSelect">Gerät:</label>
+      <select id="presetSelect">
+        <option value="">Gerät auswählen...</option>
+      </select>
+
+      <input type="text" id="name" placeholder="Gerätename (optional)">
+      <input type="number" id="watt" placeholder="Leistung (W)">
+      <input type="number" id="pf" placeholder="Leistungsfaktor (PF)" step="0.1" min="0.1" max="1">
+      <label class="checkline"><input type="checkbox" id="startSurge"> Anlaufstrom berücksichtigen</label>
+      <input type="number" id="startMult" placeholder="Start-Multiplikator" step="0.1" min="1">
+
       <button id="addDevice">➕ Gerät hinzufügen</button>
     </section>
 
-    <section id="deviceList">
+    <!-- Geräteliste -->
+    <section class="card">
       <h2>Geräteliste</h2>
-      <ul id="devices"></ul>
-      <button id="exportCSV">⬇️ PDF exportieren</button>
+      <ul id="deviceList"></ul>
+      <button id="clearDevices" class="danger">🗑️ Liste löschen</button>
     </section>
 
-    <section id="result">
-      <h2>Berechnetes Ergebnis</h2>
-      <div id="output"></div>
-      <canvas id="chart" width="300" height="150"></canvas>
+    <!-- Ergebnis -->
+    <section class="card">
+      <h2>Ergebnis</h2>
+      <div id="resultDisplay">Noch keine Geräte hinzugefügt.</div>
+      <canvas id="loadChart" aria-label="Auslastung relativ zur empfohlenen Generatorgröße"></canvas>
+      <p id="chartDesc" class="muted">
+        Das Kreisdiagramm zeigt, wie stark der empfohlene Generator (Größe nach Stufung) ausgelastet wäre.
+      </p>
+      <button id="exportPDF">⬇️ PDF exportieren</button>
     </section>
-
-    <div class="info-box">
-      <h3>ℹ️ Erklärung der Faktoren</h3>
-      <p><strong>Leistungsfaktor (PF):</strong> Der Leistungsfaktor beschreibt, wie effizient elektrische Energie in nutzbare Leistung umgewandelt wird. 
-      Ein PF von <strong>1.0</strong> bedeutet, dass keine Blindleistung entsteht (z. B. bei Heizungen oder Glühbirnen). Typische Motorgeräte haben einen PF zwischen <strong>0.8 und 0.9</strong>.</p>
-      <p><strong>Anlaufstromfaktor:</strong> Viele Motoren benötigen beim Start ein Vielfaches ihrer Nennleistung. Dieser Faktor gibt an, wie stark die kurzfristige Stromaufnahme beim Einschalten steigt. 
-      Typische Werte: <strong>1.0 – 3.0</strong> (z. B. 2.5 für Kompressoren oder Pumpen).</p>
-    </div>
   </main>
 
+  <footer>
+    <p>© 2025 Lehmann GT – Generator Leistungsrechner</p>
+  </footer>
+
+  <!-- Bibliotheken -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="app.js"></script>
+
+  <script>
+    if ('serviceWorker' in navigator && window.top === window.self) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log("✅ Service Worker aktiv"))
+        .catch(err => console.log("❌ Service Worker Fehler:", err));
+    }
+  </script>
 </body>
 </html>
