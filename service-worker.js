@@ -1,4 +1,4 @@
-const CACHE_NAME = 'generator-app-v4_6';
+const CACHE_NAME = 'generator-app-v4_6_2';
 const FILES_TO_CACHE = [
   '/',
   '/index.html',
@@ -7,7 +7,7 @@ const FILES_TO_CACHE = [
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
-  '/lehmann-logo-white.png'
+  '/logo-lgt-blau.jpg'
 ];
 
 self.addEventListener('install', evt => {

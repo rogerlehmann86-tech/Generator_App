@@ -6,12 +6,12 @@
   <title>Generator Leistungsrechner</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#0055a5">
   <link rel="icon" href="icon-192.png">
 </head>
 <body>
   <header class="app-header">
-    <img src="lehmann-logo-white.png" alt="Lehmann GT Logo" class="brand-logo" />
+    <img src="logo-lgt-blau.jpg" alt="Lehmann GT Logo" class="brand-logo" />
     <h1>Generator Leistungsrechner</h1>
     <p>Berechne die optimale Generatorgröße für deine Anwendung</p>
   </header>
@@ -23,19 +23,33 @@
 
       <label for="category">Kategorie:</label>
       <select id="category">
-        <option value="">Kategorie wählen...</option>
+        <option value="">Kategorie wählen ...</option>
       </select>
 
       <label for="presetSelect">Gerät:</label>
       <select id="presetSelect">
-        <option value="">Gerät auswählen...</option>
+        <option value="">Gerät auswählen ...</option>
       </select>
 
       <input type="text" id="name" placeholder="Gerätename (optional)">
       <input type="number" id="watt" placeholder="Leistung (W)">
-      <input type="number" id="pf" placeholder="Leistungsfaktor (PF)" step="0.1" min="0.1" max="1">
-      <label class="checkline"><input type="checkbox" id="startSurge"> Anlaufstrom berücksichtigen</label>
-      <input type="number" id="startMult" placeholder="Start-Multiplikator" step="0.1" min="1">
+
+      <!-- PF & Ia Gruppe -->
+      <div class="param-group">
+        <div class="checkline">
+          <input type="checkbox" id="startSurge">
+          <label for="startSurge">Betriebs- und Anlaufkennwerte</label>
+        </div>
+
+        <div class="pf-start-row">
+          <div class="half">
+            <input type="number" id="pf" placeholder="cos φ" step="0.05" min="0.1" max="1">
+          </div>
+          <div class="half">
+            <input type="number" id="startMult" placeholder="Iₐ" step="0.1" min="1">
+          </div>
+        </div>
+      </div>
 
       <button id="addDevice">➕ Gerät hinzufügen</button>
     </section>
@@ -51,7 +65,9 @@
     <section class="card">
       <h2>Ergebnis</h2>
       <div id="resultDisplay">Noch keine Geräte hinzugefügt.</div>
-      <canvas id="loadChart" aria-label="Auslastung relativ zur empfohlenen Generatorgröße"></canvas>
+      <div class="chart-wrap">
+        <canvas id="loadChart" aria-label="Auslastung relativ zur empfohlenen Generatorgröße"></canvas>
+      </div>
       <p id="chartDesc" class="muted">
         Das Kreisdiagramm zeigt, wie stark der empfohlene Generator (Größe nach Stufung) ausgelastet wäre.
       </p>
@@ -63,7 +79,9 @@
     <p>© 2025 Lehmann GT – Generator Leistungsrechner</p>
   </footer>
 
-  <!-- Bibliotheken -->
+  <!-- verstecktes Logo für PDF -->
+  <img id="pdfLogo" src="logo-lgt-blau.jpg" alt="" style="display:none">
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="app.js"></script>
@@ -77,3 +95,5 @@
   </script>
 </body>
 </html>
+
+
