@@ -120,12 +120,14 @@ button.danger:hover {
 .param-group {
   background: rgba(0, 85, 165, .05);
   border-radius: 12px;
-  padding: 1rem 1rem 1.1rem;
+  padding: 1.2rem 1rem 1.4rem;
   margin: 1rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   box-shadow: inset 0 0 8px rgba(0, 85, 165, .08);
+  width: 100%;
 }
 
 .checkline {
@@ -137,7 +139,8 @@ button.danger:hover {
   font-size: 1rem;
   color: #0b3b66;
   text-align: center;
-  margin-bottom: .8rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap; /* wichtig für Mobilgeräte */
 }
 
 .checkline input {
@@ -147,12 +150,17 @@ button.danger:hover {
 
 .pf-start-row {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
   gap: .8rem;
   width: 100%;
+  max-width: 420px;
 }
 
 .pf-start-row .half {
-  flex: 1;
+  flex: 1 1 45%;
+  min-width: 130px;
 }
 
 .pf-start-row input {
@@ -162,6 +170,8 @@ button.danger:hover {
   padding: .55rem;
   font-size: 1rem;
   background: #fff;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .pf-start-row input::placeholder {
@@ -170,11 +180,36 @@ button.danger:hover {
   letter-spacing: .03em;
 }
 
+/* Extra Responsive Anpassung */
+@media (max-width: 520px) {
+  .pf-start-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: .6rem;
+  }
+
+  .checkline {
+    margin-bottom: .8rem;
+    text-align: center;
+  }
+
+  .pf-start-row .half {
+    flex: 1 1 100%;
+    min-width: unset;
+  }
+}
+  color: #6b7a9c;
+  font-weight: 500;
+  letter-spacing: .03em;
+}
+
 /* Geräte-Liste */
+/* Geräte-Liste – einzeilig, klar strukturiert, responsiv */
 #deviceList {
   list-style: none;
   padding: 0;
   margin: 0;
+  width: 100%;
 }
 
 #deviceList li {
@@ -184,29 +219,37 @@ button.danger:hover {
   background: #f8faff;
   border: 1px solid #dde3f0;
   border-radius: 8px;
-  padding: 6px 10px;
-  margin-bottom: 6px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
   font-size: 0.95rem;
   color: #0b3b66;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  gap: 8px;
+  transition: background 0.2s ease;
 }
 
+#deviceList li:hover {
+  background: #eef4ff;
+}
+
+/* Inhalt links (Gerätename + Werte) */
 #deviceList li .device-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
   flex: 1;
   overflow: hidden;
+  min-width: 0;
 }
 
 #deviceList li strong {
   font-weight: 600;
   color: #0b3b66;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+  min-width: 80px;
 }
 
 #deviceList li .device-values {
@@ -223,18 +266,41 @@ button.danger:hover {
   margin-left: 6px;
 }
 
+/* Rotes Kreuz rechts */
 #deviceList li button {
   background: none;
   border: none;
   color: #dc2626;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
+  font-weight: 700;
   cursor: pointer;
-  margin-left: 10px;
   flex-shrink: 0;
+  padding: 0 6px;
+  transition: color 0.2s ease, transform 0.1s ease;
 }
 
 #deviceList li button:hover {
   color: #b91c1c;
+  transform: scale(1.15);
+}
+
+/* Responsive Verhalten */
+@media (max-width: 480px) {
+  #deviceList li {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding: 10px;
+  }
+
+  #deviceList li .device-info {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  #deviceList li button {
+    margin-top: 4px;
+    align-self: flex-start;
+  }
 }
 
 /* Diagramm */
@@ -276,5 +342,108 @@ footer {
   font-size: .85rem;
   padding: 1rem;
   color: var(--muted);
+}
+.device-item {
+  display: flex;
+  flex-direction: column;
+  background: #f8faff;
+  border: 1px solid #dde3f0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  color: #0b3b66;
+}
+
+.device-line1 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0b3b66;
+}
+
+.device-line2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  color: #94a3b8;
+}
+
+.device-factors {
+  flex: 1;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.2s ease, transform 0.1s ease;
+}
+
+.delete-btn:hover {
+  color: #b91c1c;
+  transform: scale(1.15);
+}
+/* Dynamisches, flexibles Geräte-Layout */
+.device-item-flex {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  background: #f8faff;
+  border: 1px solid #dde3f0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  gap: 6px;
+}
+
+.device-flex-info {
+  flex: 1 1 250px;
+  min-width: 200px;
+}
+
+.device-flex-info .main-line {
+  font-weight: 600;
+  color: #0b3b66;
+  font-size: 0.95rem;
+}
+
+.device-flex-info .sub-line {
+  font-size: 0.88rem;
+  color: #94a3b8;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  align-self: center;
+  transition: color 0.2s ease, transform 0.1s ease;
+}
+
+.delete-btn:hover {
+  color: #b91c1c;
+  transform: scale(1.1);
+}
+
+/* Mobile: ✖ wandert automatisch unter den Text */
+@media (max-width: 480px) {
+  .device-item-flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .delete-btn {
+    align-self: flex-end;
+    margin-top: 4px;
+  }
 }
 
