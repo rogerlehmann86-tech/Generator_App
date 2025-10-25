@@ -592,3 +592,151 @@ footer {
   object-fit: contain;
   max-width: 160px;   /* verhindert, dass es den Text zu stark verdrängt */
 }
+/* ---------- RESPONSIVE FIXES ---------- */
+
+/* ✅ Checkbox mittig ausrichten */
+.checkline {
+  display: flex;
+  align-items: center;       /* zentriert Checkbox + Text vertikal */
+  gap: 6px;                  /* etwas Abstand zwischen Kästchen und Text */
+}
+
+.checkline input[type="checkbox"] {
+  transform: scale(1.1);     /* etwas größer für Touch-Geräte */
+  margin: 0;
+}
+
+/* ✅ Textbox für Gesamtleistungsbedarf anpassen */
+.result-box.danger-box {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
+  padding: 0.8rem;
+}
+
+.result-box.danger-box .device-need {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* ✅ Titel bleibt innerhalb der Box */
+.result-box.danger-box .box-title {
+  font-size: 1.1rem;
+  white-space: normal;  /* Zeilenumbruch erlauben bei sehr schmalen Displays */
+  color: #ffffff;
+}
+
+/* ---------- Mobile Optimierungen ---------- */
+@media (max-width: 768px) {
+
+  /* Boxen etwas enger, aber ohne Überlappung */
+  .result-box {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .result-box .box-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .box-right {
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+    max-width: 100%;
+    margin-top: 8px;
+  }
+
+  .box-logo-large {
+    height: 120px;     /* Logo kleiner auf Handy */
+    max-width: 100px;
+  }
+
+  .mini-chart-wrap canvas {
+    width: 50px;
+    height: 50px;
+  }
+
+  .chart-caption {
+    font-size: 0.7rem;
+  }
+}
+/* ---------- Gesamtleistungsbedarf-Box: Schrift & Ausrichtung wie andere ---------- */
+.result-box.danger-box {
+  background: #dc2626;
+  color: #fff;
+  border: 2px solid #ffffffaa;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  text-align: left;           /* wieder linksbündig */
+  padding: 1rem 1.4rem 1.2rem;
+}
+
+.result-box.danger-box .box-title {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.7rem;          /* gleiche Größe wie andere Titel */
+  color: #fff;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.02em;
+  text-shadow:
+    0 2px 4px rgba(0, 59, 122, 0.65),
+    0 0 10px rgba(255, 255, 255, 0.25);
+}
+
+.result-box.danger-box .box-body {
+  color: #fff;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+.result-box.danger-box .device-need {
+  font-weight: 700;
+  font-size: 1.1rem;          /* gleich wie andere .device-name */
+  color: #fff;
+}
+/* ---------- Gesamtleistungsbedarf-Box: Schrift, Ausrichtung & automatischer Zeilenumbruch ---------- */
+.result-box.danger-box {
+  background: #dc2626;
+  color: #fff;
+  border: 2px solid #ffffffaa;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  text-align: left;           /* linksbündig wie andere Boxen */
+  padding: 1rem 1.4rem 1.2rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;              /* automatische Silbentrennung */
+}
+
+.result-box.danger-box .box-title {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.7rem;          /* gleiche Größe wie andere Titel */
+  color: #fff;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.02em;
+  text-shadow:
+    0 2px 4px rgba(0, 59, 122, 0.65),
+    0 0 10px rgba(255, 255, 255, 0.25);
+  white-space: normal;        /* Umbruch bei Bedarf erlauben */
+  word-break: break-word;     /* Wortumbruch falls nötig */
+  hyphens: auto;              /* mit Trennzeichen */
+}
+
+.result-box.danger-box .box-body {
+  color: #fff;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+.result-box.danger-box .device-need {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+
