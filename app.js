@@ -265,7 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ---------- NEUER PDF-EXPORT ----------
+   // ---------- NEUER PDF-EXPORT MIT DESIGN-BOXEN ----------
   document.getElementById("exportPDF").addEventListener("click", async () => {
     if (!devices.length) return alert("Bitte zuerst Geräte hinzufügen.");
 
@@ -307,45 +307,87 @@ document.addEventListener("DOMContentLoaded", () => {
         if (pf) doc.text(pf, 140, y);
         if (ia) doc.text(ia, 165, y);
         y += 6;
-        if (y > 260) { doc.addPage(); y = 20; }
+        if (y > 250) { doc.addPage(); y = 20; }
       });
+      y += 10;
     }
 
     // ---------- Ergebnisse ----------
     const s = computeSummary(devices);
-    y += 8;
-    if (y > 250) { doc.addPage(); y = 20; }
 
-    // Gesamtleistungsbedarf
-    doc.setFontSize(14);
-    doc.setTextColor(220, 38, 38);
-    doc.text("Gesamtleistungsbedarf", 15, y);
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text(`${s.totalKVA.toFixed(2)} kVA (≈ ${s.totalKW.toFixed(2)} kW)`, 20, y + 7);
-    y += 20;
+    // Boxfarben (RGB)
+    const red = [220, 38, 38];
+    const blue = [11, 59, 102];
+    const darkblue = [0, 85, 165];
 
-    // Marktübliche Empfehlung
-    doc.setFontSize(14);
-    doc.setTextColor(11, 59, 102);
-    doc.text("Marktübliche Empfehlung", 15, y);
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text(`Generatorgröße: ${s.marketKVA.toFixed(1)} kVA (≈ ${s.marketKW.toFixed(1)} kW)`, 20, y + 7);
-    const marktLogo = await loadImage("Bild Generatorvermietung.jpg");
-    doc.addImage(marktLogo, "JPEG", pageWidth - 60, y - 5, 40, 25);
-    y += 30;
+    // Box-Zeichenfunktion
+    async function drawBox({ y, color, title, lines = [], logo, logoW = 40, logoH = 20 }) {
+      const x = 15;
+      const boxW = pageWidth - 30;
+      const lineH = 7;
+      const contentH = (lines.length + 2) * lineH;
+      const boxH = contentH + 10;
 
-    // Mietgeräte-Empfehlung
-    doc.setFontSize(14);
-    doc.setTextColor(0, 85, 165);
-    doc.text("Mietgeräte Empfehlung", 15, y);
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text(`${s.rental.name}`, 20, y + 7);
-    doc.text(`${s.rental.kva.toFixed(1)} kVA / ${s.rental.kw.toFixed(1)} kW`, 20, y + 14);
-    doc.text(`${s.rental.fuel}`, 20, y + 21);
-    doc.addImage(marktLogo, "JPEG", pageWidth - 60, y - 5, 40, 25);
+      // Hintergrund
+      doc.setFillColor(...color);
+      doc.roundedRect(x, y, boxW, boxH, 3, 3, "F");
+
+      // Text
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text(title, x + 8, y + 12);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      lines.forEach((t, i) => doc.text(t, x + 8, y + 22 + i * lineH));
+
+      // Logo proportional
+      if (logo) {
+        const imgData = await loadImage(logo);
+        const img = new Image();
+        img.src = logo;
+        await new Promise(res => (img.onload = res));
+        const ratio = img.width / img.height;
+        let w = logoW;
+        let h = logoW / ratio;
+        if (h > logoH) { h = logoH; w = h * ratio; }
+        doc.addImage(imgData, "JPEG", pageWidth - w - 20, y + 8, w, h);
+      }
+
+      return y + boxH + 10;
+    }
+
+    // Boxen darstellen
+    y = await drawBox({
+      y,
+      color: red,
+      title: "Gesamtleistungsbedarf",
+      lines: [`${s.totalKVA.toFixed(2)} kVA  (≈ ${s.totalKW.toFixed(2)} kW)`],
+      logo: "logo-lgt-blau.jpg"
+    });
+
+    y = await drawBox({
+      y,
+      color: blue,
+      title: "Marktübliche Empfehlung",
+      lines: [
+        `Generatorgröße: ${s.marketKVA.toFixed(1)} kVA`,
+        `(≈ ${s.marketKW.toFixed(1)} kW)`
+      ],
+      logo: "Bild Generatorvermietung.jpg"
+    });
+
+    y = await drawBox({
+      y,
+      color: darkblue,
+      title: "Mietgeräte Empfehlung",
+      lines: [
+        s.rental.name,
+        `${s.rental.kva.toFixed(1)} kVA / ${s.rental.kw.toFixed(1)} kW`,
+        s.rental.fuel
+      ],
+      logo: "Bild Generatorvermietung.jpg"
+    });
 
     // ---------- Fußzeile ----------
     doc.setFontSize(9);
@@ -371,6 +413,5 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     });
   }
-
 });
 
