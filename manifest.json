@@ -1,7 +1,8 @@
 {
   "name": "Generator Leistungsrechner",
   "short_name": "GeneratorCalc",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0055a5",
   "theme_color": "#0055a5",
