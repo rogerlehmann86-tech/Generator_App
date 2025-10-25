@@ -416,4 +416,78 @@ footer {
 .device-item button:hover {
   color: #b91c1c;
 }
+/* ---------- Info-Button + Tooltip (fix) ---------- */
+.checkline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #0b3b66;
+  text-align: center;
+  margin-bottom: 0.8rem;
+  position: relative; /* ✅ Tooltip bleibt in dieser Box */
+}
+
+.info-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.2s ease;
+  z-index: 5;
+}
+
+.info-btn:hover {
+  color: var(--primary-dark);
+}
+
+/* Tooltip-Box */
+.info-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  color: #0b3b66;
+  border: 1px solid #c6d4f8;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  padding: 0.75rem 1rem;
+  width: 270px;
+  font-size: 0.9rem;
+  text-align: left;
+  z-index: 50; /* ✅ liegt jetzt über allen Elementen */
+}
+
+/* kleiner Pfeil unter dem Tooltip */
+.info-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: #fff transparent transparent transparent;
+}
+
+/* Tooltip sichtbar */
+.checkline.show-tooltip .info-tooltip {
+  display: block;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* sanftes Einblenden */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, 5px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
 

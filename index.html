@@ -36,10 +36,24 @@
 
       <!-- PF & Ia Gruppe -->
       <div class="param-group">
-        <div class="checkline">
-          <input type="checkbox" id="startSurge">
-          <label for="startSurge">Betriebs- und Anlaufkennwerte</label>
-        </div>
+       <div class="checkline">
+  <input type="checkbox" id="startSurge">
+  <label for="startSurge">Betriebs- und Anlaufkennwerte</label>
+  <button type="button" class="info-btn" title="Erklärung anzeigen">ℹ️</button>
+
+  <div class="info-tooltip">
+    <strong>Was sind Betriebs- und Anlaufkennwerte?</strong><br><br>
+    Viele Geräte brauchen beim Start für kurze Zeit deutlich mehr Strom als im Dauerbetrieb – 
+    zum Beispiel Elektromotoren, Kompressoren oder Kühlschränke.  
+    <br><br>
+    Der Leistungsfaktor (<em>cos φ</em>) beschreibt, wie „effizient“ ein Gerät elektrische Leistung nutzt.  
+    Der Anlaufstrom-Faktor (<em>Iₐ</em>) zeigt, wie stark die Stromaufnahme beim Einschalten ansteigt.  
+    <br><br>
+    Diese Werte helfen, die Generatorgröße realistischer zu berechnen, 
+    damit er beim Start solcher Geräte nicht überlastet wird.
+  </div>
+</div>
+
 
         <div class="pf-start-row">
           <div class="half">

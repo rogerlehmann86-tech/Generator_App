@@ -236,6 +236,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateAll() { updateList(); calculateAndDisplay(); }
   updateAll();
+// ---------- Info-Button Tooltip ----------
+document.querySelectorAll('.info-btn').forEach(btn => {
+  btn.addEventListener('click', e => {
+    const parent = e.target.closest('.checkline');
+    parent.classList.toggle('show-tooltip');
+  });
+
+  // Tooltip schließen, wenn man außerhalb klickt
+  document.addEventListener('click', e => {
+    const parent = btn.closest('.checkline');
+    if (!parent.contains(e.target)) parent.classList.remove('show-tooltip');
+  });
+});
+
 });
 
 
