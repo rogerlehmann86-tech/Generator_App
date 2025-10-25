@@ -181,7 +181,6 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
 
-      <!-- Mietgeräte Empfehlung -->
       <a href="${s.rental.link}" target="_blank" class="result-box rent-box linkbox">
         <div class="box-content">
           <div class="box-text">
@@ -203,7 +202,6 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </a>
 
-      <!-- Marktübliche Empfehlung -->
       <div class="result-box market-box">
         <div class="box-content">
           <div class="box-text">
@@ -266,5 +264,113 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!p.contains(e.target)) p.classList.remove("show-tooltip");
     });
   });
+
+  // ---------- NEUER PDF-EXPORT ----------
+  document.getElementById("exportPDF").addEventListener("click", async () => {
+    if (!devices.length) return alert("Bitte zuerst Geräte hinzufügen.");
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // ---------- Header ----------
+    const logo = await loadImage("logo-lgt-blau.jpg");
+    doc.addImage(logo, "JPEG", 15, 10, 40, 15);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(0, 85, 165);
+    doc.text("Generator Leistungsrechner", 60, 18);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    doc.setTextColor(60);
+    doc.text("Lehmann GT GmbH", 60, 25);
+    doc.line(15, 30, pageWidth - 15, 30);
+
+    let y = 40;
+
+    // ---------- Geräteliste ----------
+    if (devices.length) {
+      doc.setFontSize(14);
+      doc.setTextColor(0, 85, 165);
+      doc.text("Geräteliste", 15, y);
+      y += 8;
+
+      doc.setFontSize(10);
+      doc.setTextColor(0);
+      devices.forEach((d, i) => {
+        const name = d.name || `Gerät ${i + 1}`;
+        const watt = `${d.watt ?? 0} W`;
+        const pf = d.useFactors ? `cos φ ${d.pf ?? 1}` : "";
+        const ia = d.useFactors ? `Iₐ ${d.startMult ?? 1}` : "";
+        doc.text(`${i + 1}. ${name}`, 18, y);
+        doc.text(watt, 110, y);
+        if (pf) doc.text(pf, 140, y);
+        if (ia) doc.text(ia, 165, y);
+        y += 6;
+        if (y > 260) { doc.addPage(); y = 20; }
+      });
+    }
+
+    // ---------- Ergebnisse ----------
+    const s = computeSummary(devices);
+    y += 8;
+    if (y > 250) { doc.addPage(); y = 20; }
+
+    // Gesamtleistungsbedarf
+    doc.setFontSize(14);
+    doc.setTextColor(220, 38, 38);
+    doc.text("Gesamtleistungsbedarf", 15, y);
+    doc.setFontSize(12);
+    doc.setTextColor(0);
+    doc.text(`${s.totalKVA.toFixed(2)} kVA (≈ ${s.totalKW.toFixed(2)} kW)`, 20, y + 7);
+    y += 20;
+
+    // Marktübliche Empfehlung
+    doc.setFontSize(14);
+    doc.setTextColor(11, 59, 102);
+    doc.text("Marktübliche Empfehlung", 15, y);
+    doc.setFontSize(12);
+    doc.setTextColor(0);
+    doc.text(`Generatorgröße: ${s.marketKVA.toFixed(1)} kVA (≈ ${s.marketKW.toFixed(1)} kW)`, 20, y + 7);
+    const marktLogo = await loadImage("Bild Generatorvermietung.jpg");
+    doc.addImage(marktLogo, "JPEG", pageWidth - 60, y - 5, 40, 25);
+    y += 30;
+
+    // Mietgeräte-Empfehlung
+    doc.setFontSize(14);
+    doc.setTextColor(0, 85, 165);
+    doc.text("Mietgeräte Empfehlung", 15, y);
+    doc.setFontSize(12);
+    doc.setTextColor(0);
+    doc.text(`${s.rental.name}`, 20, y + 7);
+    doc.text(`${s.rental.kva.toFixed(1)} kVA / ${s.rental.kw.toFixed(1)} kW`, 20, y + 14);
+    doc.text(`${s.rental.fuel}`, 20, y + 21);
+    doc.addImage(marktLogo, "JPEG", pageWidth - 60, y - 5, 40, 25);
+
+    // ---------- Fußzeile ----------
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text(`Erstellt am ${new Date().toLocaleDateString()} – www.lehmann-gt.ch`, 15, 285);
+
+    doc.save("Generator_Leistungsrechner.pdf");
+  });
+
+  // ---------- Hilfsfunktion zum Laden von Bildern ----------
+  async function loadImage(src) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = src;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL("image/jpeg"));
+      };
+    });
+  }
+
 });
 
