@@ -90,31 +90,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const li = document.createElement("li");
     li.className = "device-item";
 
-    // 🧩 Fallbacks gegen leere Werte
     const name = d.name?.trim() || "Unbenanntes Gerät";
     const watt = d.watt ? `${d.watt} W` : "(keine Angabe)";
-    const facts = [];
 
+    // Hauptzeile (Name + Watt)
+    const mainLine = document.createElement("div");
+    mainLine.className = "device-main";
+    mainLine.textContent = `${name}: ${watt}`;
+
+    // Zusatzzeile (cos φ, Iₐ)
+    const facts = [];
     if (d.useFactors && d.pf && d.pf !== 1) facts.push(`cos φ ${d.pf}`);
     if (d.useFactors && d.startMult && d.startMult !== 1) facts.push(`Iₐ ${d.startMult}`);
 
-    let info = `${name}: ${watt}`;
-    if (facts.length) info += ` (${facts.join(", ")})`;
-
-    console.log("Gerät angezeigt:", info); // Debug-Ausgabe
-
-    const span = document.createElement("span");
-    span.textContent = info;
+    const detailLine = document.createElement("div");
+    detailLine.className = "device-details";
+    detailLine.textContent = facts.join("  |  ");
 
     const del = document.createElement("button");
     del.textContent = "✖";
     del.onclick = () => { devices.splice(i, 1); save(); updateAll(); };
 
-    li.appendChild(span);
+    const textWrap = document.createElement("div");
+    textWrap.className = "device-text";
+    textWrap.appendChild(mainLine);
+    if (facts.length) textWrap.appendChild(detailLine);
+
+    li.appendChild(textWrap);
     li.appendChild(del);
     listEl.appendChild(li);
   });
 }
+
 
 
   // ---------- Gerät hinzufügen ----------
