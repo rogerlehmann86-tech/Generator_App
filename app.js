@@ -1,7 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("GeneratorCalc v5.0 – Stabil mit PDF-Infofeld");
+  console.log("GeneratorCalc v5.4.1 – Fix Geräteanzeige + Stabilität");
 
-  // -------- Kategorien & Presets --------
+  // ---------- Lehmann GT Mietgeräte ----------
+  const rentalGenerators = [
+    { id: "lgtm-eu20i", name: "Honda EU20i", kva: 2.0, kw: 1.6, volt: "230 V", fuel: "Benzin – Inverter", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/benzin-generator-stromerzeuger-honda-eu20i/" },
+    { id: "lgtm-cx7000t", name: "CGM CX7000t", kva: 7.0, kw: 5.6, volt: "230 V / 380 V", fuel: "Benzin – AVR-Regelung", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/benzin-generator-stromerzeuger-cgm-cx7000t/" },
+    { id: "lgtm-s9000dual", name: "CGM S9000Dual", kva: 9.0, kw: 8.0, volt: "230 V / 380 V", fuel: "Diesel – AVR-Regelung", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/benzin-generator-stromerzeuger-cgm-s9000dual/" },
+    { id: "lgtm-v18y", name: "CGM V18Y", kva: 18.0, kw: 16.0, volt: "230 V / 380 V", fuel: "Diesel – stationär – AVR-Regelung", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/diesel-generator-stromerzeuger-cgm-industrial-v18y/" },
+    { id: "lgtm-v60f", name: "CGM V60F", kva: 60.0, kw: 48.0, volt: "230 V / 380 V", fuel: "Diesel – stationär – AVR-Regelung", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/diesel-generator-stromerzeuger-cgm-rnt-v60f/" }
+  ];
+
+  // ---------- Gerätekategorien ----------
   const categories = {
     "Werkzeuge": [
       { name: "Bohrmaschine", watt: 800, pf: 0.9, startSurge: true, startMult: 2.5 },
@@ -27,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ]
   };
 
-  // -------- DOM Referenzen --------
+  // ---------- DOM-Elemente ----------
   const cat = document.getElementById("category");
   const preset = document.getElementById("presetSelect");
   const nameEl = document.getElementById("name");
@@ -39,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultEl = document.getElementById("resultDisplay");
   const chartCanvas = document.getElementById("loadChart");
 
-  // -------- Kategorie Dropdown füllen --------
+  // ---------- Dropdowns initialisieren ----------
   cat.innerHTML = '<option value="">Kategorie auswählen ...</option>';
   Object.keys(categories).forEach(c => {
     const o = document.createElement("option");
@@ -47,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
     cat.appendChild(o);
   });
 
-  // -------- Kategorieänderung → Geräte laden --------
   cat.addEventListener("change", () => {
     preset.innerHTML = '<option value="">Gerät auswählen ...</option>';
     const list = categories[cat.value] || [];
@@ -61,7 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
     surgeBox.checked = false;
   });
 
-  // -------- Gerätauswahl → Werte übernehmen --------
   preset.addEventListener("change", () => {
     const d = (categories[cat.value] || []).find(x => x.name === preset.value);
     if (!d) return;
@@ -70,79 +77,94 @@ document.addEventListener("DOMContentLoaded", () => {
     pfEl.value = d.pf ?? "";
     multEl.value = d.startMult ?? "";
     surgeBox.checked = !!d.startSurge;
-    pfEl.placeholder = "cos φ";
-    multEl.placeholder = "Iₐ";
   });
 
-  // -------- Geräteverwaltung --------
+  // ---------- Geräteverwaltung ----------
   let devices = [];
   try { devices = JSON.parse(localStorage.getItem("devices") || "[]"); } catch {}
   const save = () => localStorage.setItem("devices", JSON.stringify(devices));
 
-  function updateList() {
-    listEl.innerHTML = "";
-    devices.forEach((d, i) => {
-      const li = document.createElement("li");
-      li.className = "device-item";
-      let info = `${d.name}: ${d.watt} W`;
-      const facts = [];
-      if (d.useFactors && d.pf && d.pf != 1) facts.push(`cos φ ${d.pf}`);
-      if (d.useFactors && d.startMult && d.startMult != 1) facts.push(`Iₐ ${d.startMult}`);
-      if (facts.length) info += ` (${facts.join(", ")})`;
-      const span = document.createElement("span");
-      span.innerHTML = info;
-      const del = document.createElement("button");
-      del.textContent = "✖";
-      del.onclick = () => { devices.splice(i, 1); save(); updateAll(); };
-      li.appendChild(span);
-      li.appendChild(del);
-      listEl.appendChild(li);
-    });
-  }
+ function updateList() {
+  listEl.innerHTML = "";
+  devices.forEach((d, i) => {
+    const li = document.createElement("li");
+    li.className = "device-item";
 
-  // -------- Geräte hinzufügen --------
+    // 🧩 Fallbacks gegen leere Werte
+    const name = d.name?.trim() || "Unbenanntes Gerät";
+    const watt = d.watt ? `${d.watt} W` : "(keine Angabe)";
+    const facts = [];
+
+    if (d.useFactors && d.pf && d.pf !== 1) facts.push(`cos φ ${d.pf}`);
+    if (d.useFactors && d.startMult && d.startMult !== 1) facts.push(`Iₐ ${d.startMult}`);
+
+    let info = `${name}: ${watt}`;
+    if (facts.length) info += ` (${facts.join(", ")})`;
+
+    console.log("Gerät angezeigt:", info); // Debug-Ausgabe
+
+    const span = document.createElement("span");
+    span.textContent = info;
+
+    const del = document.createElement("button");
+    del.textContent = "✖";
+    del.onclick = () => { devices.splice(i, 1); save(); updateAll(); };
+
+    li.appendChild(span);
+    li.appendChild(del);
+    listEl.appendChild(li);
+  });
+}
+
+
+  // ---------- Gerät hinzufügen ----------
   document.getElementById("addDevice").addEventListener("click", () => {
-    const name = nameEl.value.trim();
+    const name = nameEl.value.trim() || preset.value || `Gerät ${devices.length + 1}`;
     const watt = parseFloat(wattEl.value);
     const pf = parseFloat(pfEl.value) || 1;
     const mult = parseFloat(multEl.value) || 1;
     const useFactors = surgeBox.checked;
-    if (!name || isNaN(watt) || watt <= 0)
-      return alert("Bitte Gerätename und gültige Leistung angeben.");
+    if (isNaN(watt) || watt <= 0)
+      return alert("Bitte gültige Leistung angeben.");
 
     devices.push({ name, watt, pf, startMult: mult, useFactors });
     save();
     updateAll();
+
     nameEl.value = wattEl.value = pfEl.value = multEl.value = "";
     surgeBox.checked = false;
+    cat.value = "";
+    preset.innerHTML = '<option value="">Gerät auswählen ...</option>';
   });
 
   document.getElementById("clearDevices").addEventListener("click", () => {
     if (!confirm("Alle Geräte wirklich löschen?")) return;
-    devices = []; save(); updateAll();
+    devices = [];
+    save();
+    updateAll();
   });
 
-  // -------- Berechnung --------
+  // ---------- Berechnung ----------
   function computeSummary(devs) {
     const PF_REF_GEN = 0.8;
     const S_total = devs.reduce((sum, d) => {
       const P = d.watt || 0;
-      if (!d.useFactors) return sum + P; // Ohne Kennwerte
+      if (!d.useFactors) return sum + P;
       const PF = d.pf || 1;
       const M = d.startMult || 1;
       return sum + (P / PF) * M;
     }, 0);
-
     const totalKVA = S_total / 1000;
     const totalKW = totalKVA * PF_REF_GEN;
     const kVA_steps = [0.65, 0.8, 1, 1.5, 2, 2.5, 3, 4, 5, 6.5, 8, 10, 12, 15, 20];
     const marketKVA = kVA_steps.find(s => totalKVA < s) ?? Math.ceil(totalKVA);
     const marketKW = marketKVA * PF_REF_GEN;
     const usagePercent = (totalKVA / marketKVA) * 100;
-    return { totalKW, totalKVA, marketKVA, marketKW, usagePercent };
+    const rental = rentalGenerators.find(r => r.kva >= marketKVA) || rentalGenerators[rentalGenerators.length - 1];
+    return { totalKW, totalKVA, marketKVA, marketKW, usagePercent, rental };
   }
 
-  // -------- Diagramm --------
+  // ---------- Diagramm ----------
   let chart = null;
   function renderChart(usagePercent) {
     const used = Math.min(100, Math.max(0, usagePercent));
@@ -167,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
     chart = new Chart(chartCanvas, { type: "doughnut", data, options, plugins: [plugin] });
   }
 
-  // -------- Anzeige --------
+  // ---------- Anzeige ----------
   function calculateAndDisplay() {
     if (!devices.length) {
       resultEl.textContent = "Noch keine Geräte hinzugefügt.";
@@ -175,138 +197,38 @@ document.addEventListener("DOMContentLoaded", () => {
       chart = null;
       return;
     }
+
     const s = computeSummary(devices);
+
     resultEl.innerHTML = `
-      <div style="font-size:1.25rem;color:#0b3b66;font-weight:700;">⚡ Empfohlener Generator: ${s.marketKVA.toFixed(1)} kVA (≈ ${s.marketKW.toFixed(1)} kW)</div>
-      <div style="font-size:.95rem;color:#555;">Gesamtleistungsbedarf: ${s.totalKW.toFixed(1)} kW</div>
+      <div class="result-box rent-box">
+        <div class="box-header">
+          <span class="box-title">Mietgeräte Empfehlung</span>
+          <img src="Lehmann-GT_GmbH_Logo_highres.jpg" alt="Lehmann GT" class="box-logo">
+        </div>
+        <div class="box-body">
+          <span class="device-name">${s.rental.name}</span>
+          <span class="device-spec">(${s.rental.kva.toFixed(1)} kVA / ${s.rental.kw.toFixed(1)} kW)</span>
+          <a href="${s.rental.link}" target="_blank" class="box-link">➡ Zum Mietgerät</a>
+        </div>
+      </div>
+
+      <div class="result-box market-box">
+        <div class="box-header">
+          <span class="box-title">Marktübliche Empfehlung</span>
+        </div>
+        <div class="box-body">
+          <span class="device-spec">Generatorgröße: ${s.marketKVA.toFixed(1)} kVA (≈ ${s.marketKW.toFixed(1)} kW)</span><br>
+          <span class="device-need">Gesamtleistungsbedarf: ${s.totalKW.toFixed(1)} kW</span>
+        </div>
+      </div>
     `;
+
     renderChart(s.usagePercent);
   }
 
-  // -------- Helper für Infofeldanzeige --------
-  function hasActiveFactorDevice(devs) {
-    return devs.some(d => d.useFactors && ((d.pf && d.pf !== 1) || (d.startMult && d.startMult !== 1)));
-  }
-
-  // -------- PDF Export (mit fester Info-Box, nur wenn nötig) --------
-  document.getElementById("exportPDF").addEventListener("click", () => {
-    if (!devices.length) return alert("Keine Daten zum Exportieren.");
-    const { jsPDF } = window.jspdf;
-    const s = computeSummary(devices);
-    const doc = new jsPDF("p", "mm", "a4");
-    const BLUE = { r: 0, g: 85, b: 165 };
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    const marginX = 14;
-    const contentW = pageW - marginX * 2;
-
-    const addImageScaled = (img, x, y, maxW, maxH) => {
-      const p = doc.getImageProperties(img);
-      const scale = Math.min(maxW / p.width, maxH / p.height);
-      const w = p.width * scale;
-      const h = p.height * scale;
-      const xPos = x === "center" ? (pageW - w) / 2 : x;
-      doc.addImage(img, "PNG", xPos, y, w, h);
-      return h;
-    };
-
-    // Header
-    doc.setFillColor(BLUE.r, BLUE.g, BLUE.b);
-    doc.rect(0, 0, pageW, 25, "F");
-    try { doc.addImage(document.getElementById("pdfLogo"), "JPEG", 10, 4, 35, 17); } catch {}
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(16);
-    doc.text("Generator Leistungsrechner", 50, 14);
-
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(13);
-    doc.text(`⚡ Empfohlener Generator: ${s.marketKVA.toFixed(1)} kVA (≈ ${s.marketKW.toFixed(1)} kW)`, marginX, 38);
-    doc.setFontSize(11);
-    doc.text(`Gesamtleistungsbedarf: ${s.totalKW.toFixed(1)} kW`, marginX, 46);
-    doc.setDrawColor(BLUE.r, BLUE.g, BLUE.b);
-    doc.line(marginX, 50, pageW - marginX, 50);
-
-    // Geräteliste
-    let y = 58;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.setTextColor(BLUE.r, BLUE.g, BLUE.b);
-    doc.text("Geräteliste", marginX, y);
-    y += 6;
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(10);
-    devices.forEach(d => {
-      if (y > pageH - 40) { doc.addPage(); y = 25; }
-      doc.text(`• ${d.name}: ${d.watt} W`, marginX + 4, y);
-      y += 5;
-      if (d.useFactors && ((d.pf && d.pf !== 1) || (d.startMult && d.startMult !== 1))) {
-        const extras = [];
-        if (d.pf && d.pf !== 1) extras.push(`cos φ ${d.pf}`);
-        if (d.startMult && d.startMult !== 1) extras.push(`Iₐ ${d.startMult}`);
-        doc.setFont("helvetica", "italic");
-        doc.setTextColor(90, 90, 90);
-        doc.text(`(${extras.join(", ")})`, marginX + 12, y);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(0, 0, 0);
-        y += 6;
-      }
-    });
-    doc.line(marginX, y + 2, pageW - marginX, y + 2);
-    y += 10;
-
-    // Diagramm
-    try {
-      const chartImg = chartCanvas.toDataURL("image/png", 1.0);
-      const maxH = 90, maxW = 140;
-      if (y + maxH + 20 > pageH) { doc.addPage(); y = 25; }
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.setTextColor(BLUE.r, BLUE.g, BLUE.b);
-      doc.text("Auslastungsdiagramm", marginX, y);
-      y += 4 + addImageScaled(chartImg, "center", y + 4, maxW, maxH) + 14;
-    } catch {}
-
-    // Infofeld nur wenn nötig
-    if (hasActiveFactorDevice(devices)) {
-      const boxH = 52;
-      const boxX = marginX - 2;
-      const boxW = contentW + 4;
-      const pad = 6;
-      if (y + boxH > pageH - 20) { doc.addPage(); y = 25; }
-      doc.setDrawColor(BLUE.r, BLUE.g, BLUE.b);
-      doc.setFillColor(238, 243, 250);
-      doc.roundedRect(boxX, y, boxW, boxH, 3, 3, "FD");
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.setTextColor(BLUE.r, BLUE.g, BLUE.b);
-      doc.text("Hinweis zu Kennwerten:", boxX + pad, y + 10);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.setTextColor(50, 50, 50);
-      const lines = doc.splitTextToSize(
-        "cos φ (Leistungsfaktor) beschreibt das Verhältnis zwischen Wirkleistung und Scheinleistung. Je kleiner cos φ, desto größer muss die Generator-Scheinleistung dimensioniert werden.\n\nIₐ (Anlaufstromfaktor) ist das Verhältnis von Anlauf- zu Betriebsstrom. Motoren haben beim Start oft einen deutlich höheren Strombedarf (Iₐ > 1).",
-        boxW - pad * 2
-      );
-      doc.text(lines, boxX + pad, y + 18);
-      y += boxH + 6;
-    }
-
-    // Footer
-    doc.setDrawColor(BLUE.r, BLUE.g, BLUE.b);
-    doc.line(marginX, pageH - 12, pageW - marginX, pageH - 12);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(100);
-    doc.text("Erstellt mit GeneratorCalc © 2025 Lehmann GT", marginX, pageH - 6);
-
-    doc.save("generator_bericht.pdf");
-  });
-
-  // -------- Alles aktualisieren --------
   function updateAll() { updateList(); calculateAndDisplay(); }
   updateAll();
 });
+
 

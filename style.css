@@ -1,3 +1,8 @@
+/* =========================================
+   GeneratorCalc v5.4 – Layout & Design
+   ========================================= */
+
+/* ---------- Farbdefinitionen ---------- */
 :root {
   --primary: #0055a5;
   --primary-dark: #003b7a;
@@ -5,22 +10,20 @@
   --text: #1e293b;
   --muted: #64748b;
   --card: #ffffff;
-  --shadow: 0 8px 24px rgba(0, 85, 165, .12);
+  --shadow: 0 8px 24px rgba(0, 85, 165, 0.12);
 }
 
-/* Global */
-* {
-  box-sizing: border-box;
-}
+/* ---------- Global ---------- */
+* { box-sizing: border-box; }
 
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, Helvetica, Arial, sans-serif;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Helvetica, Arial, sans-serif;
   background: var(--bg);
   margin: 0;
   color: var(--text);
 }
 
-/* Header */
+/* ---------- Header ---------- */
 header.app-header {
   background: var(--primary);
   color: #fff;
@@ -48,7 +51,7 @@ header p {
   color: #eef4ff;
 }
 
-/* Layout */
+/* ---------- Layout ---------- */
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -69,10 +72,8 @@ h2 {
   color: #0b3b66;
 }
 
-/* Inputs & Buttons */
-input,
-select,
-button {
+/* ---------- Inputs & Buttons ---------- */
+input, select, button {
   width: 100%;
   margin-bottom: .6rem;
   padding: .6rem;
@@ -87,8 +88,7 @@ input::placeholder {
   color: #97a6c6;
 }
 
-input:focus,
-select:focus {
+input:focus, select:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 2px rgba(0, 85, 165, .2);
@@ -116,18 +116,16 @@ button.danger:hover {
   background: #b91c1c;
 }
 
-/* PF/Ia Gruppe */
+/* ---------- PF / Ia Gruppe ---------- */
 .param-group {
   background: rgba(0, 85, 165, .05);
   border-radius: 12px;
-  padding: 1.2rem 1rem 1.4rem;
+  padding: 1rem 1rem 1.1rem;
   margin: 1rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   box-shadow: inset 0 0 8px rgba(0, 85, 165, .08);
-  width: 100%;
 }
 
 .checkline {
@@ -139,8 +137,7 @@ button.danger:hover {
   font-size: 1rem;
   color: #0b3b66;
   text-align: center;
-  margin-bottom: 1rem;
-  flex-wrap: wrap; /* wichtig für Mobilgeräte */
+  margin-bottom: .8rem;
 }
 
 .checkline input {
@@ -150,17 +147,12 @@ button.danger:hover {
 
 .pf-start-row {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
   gap: .8rem;
   width: 100%;
-  max-width: 420px;
 }
 
 .pf-start-row .half {
-  flex: 1 1 45%;
-  min-width: 130px;
+  flex: 1;
 }
 
 .pf-start-row input {
@@ -170,8 +162,6 @@ button.danger:hover {
   padding: .55rem;
   font-size: 1rem;
   background: #fff;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .pf-start-row input::placeholder {
@@ -180,36 +170,11 @@ button.danger:hover {
   letter-spacing: .03em;
 }
 
-/* Extra Responsive Anpassung */
-@media (max-width: 520px) {
-  .pf-start-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: .6rem;
-  }
-
-  .checkline {
-    margin-bottom: .8rem;
-    text-align: center;
-  }
-
-  .pf-start-row .half {
-    flex: 1 1 100%;
-    min-width: unset;
-  }
-}
-  color: #6b7a9c;
-  font-weight: 500;
-  letter-spacing: .03em;
-}
-
-/* Geräte-Liste */
-/* Geräte-Liste – einzeilig, klar strukturiert, responsiv */
+/* ---------- Geräte-Liste ---------- */
 #deviceList {
   list-style: none;
   padding: 0;
   margin: 0;
-  width: 100%;
 }
 
 #deviceList li {
@@ -219,95 +184,44 @@ button.danger:hover {
   background: #f8faff;
   border: 1px solid #dde3f0;
   border-radius: 8px;
-  padding: 8px 10px;
-  margin-bottom: 8px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
   font-size: 0.95rem;
   color: #0b3b66;
-  gap: 8px;
-  transition: background 0.2s ease;
-}
-
-#deviceList li:hover {
-  background: #eef4ff;
-}
-
-/* Inhalt links (Gerätename + Werte) */
-#deviceList li .device-info {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  flex: 1;
-  overflow: hidden;
-  min-width: 0;
-}
-
-#deviceList li strong {
-  font-weight: 600;
-  color: #0b3b66;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1 1 auto;
-  min-width: 80px;
 }
 
-#deviceList li .device-values {
-  color: #475569;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  flex-shrink: 0;
+#deviceList li span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #deviceList li em {
-  font-style: italic;
-  color: #94a3b8;
-  font-size: 0.88rem;
-  margin-left: 6px;
+  font-style: normal;
+  color: #666;
+  font-size: 0.9rem;
+  margin-left: 8px;
 }
 
-/* Rotes Kreuz rechts */
 #deviceList li button {
   background: none;
   border: none;
   color: #dc2626;
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-size: 1.1rem;
   cursor: pointer;
+  margin-left: 10px;
   flex-shrink: 0;
-  padding: 0 6px;
-  transition: color 0.2s ease, transform 0.1s ease;
 }
 
 #deviceList li button:hover {
   color: #b91c1c;
-  transform: scale(1.15);
 }
 
-/* Responsive Verhalten */
-@media (max-width: 480px) {
-  #deviceList li {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    padding: 10px;
-  }
-
-  #deviceList li .device-info {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  #deviceList li button {
-    margin-top: 4px;
-    align-self: flex-start;
-  }
-}
-
-/* Diagramm */
-.chart-wrap {
-  width: 100%;
-}
-
+/* ---------- Diagramm ---------- */
+.chart-wrap { width: 100%; }
 #loadChart {
   width: 100%;
   height: 240px !important;
@@ -315,26 +229,121 @@ button.danger:hover {
   display: block;
   margin: 0 auto;
 }
-
 .muted {
   color: var(--muted);
   font-size: .95rem;
   margin-top: .25rem;
 }
 
-/* Responsive */
+/* ---------- Ergebnisboxen ---------- */
+.result-box {
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif;
+}
+
+.result-box:hover {
+  transform: translateY(-2px);
+}
+
+/* Kopfzeile */
+.box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.box-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.box-logo {
+  height: 34px;
+  width: auto;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+/* Inhalt */
+.box-body {
+  font-size: 1rem;
+  color: #0b3b66;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.device-name {
+  font-weight: 600;
+  color: #000;
+}
+
+.device-spec {
+  font-weight: 500;
+  color: #333;
+}
+
+.device-need {
+  font-size: 0.95rem;
+  color: #444;
+}
+
+/* Link in eigener Zeile */
+.box-link {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.95rem;
+  margin-top: 6px;
+}
+
+.box-link:hover {
+  text-decoration: underline;
+}
+
+/* 🔴 Mietgeräte-Empfehlung (weiß, roter Rand) */
+.rent-box {
+  background: #ffffff;
+  border: 2px solid #d00000;
+}
+
+.rent-box .box-title {
+  color: #b40000;
+}
+
+.rent-box .box-link {
+  color: #b40000;
+}
+
+/* 🔵 Markt-Empfehlung (hellblau gefüllt, blauer Rand) */
+.market-box {
+  background: #f0f6ff;
+  border: 2px solid #0055a5;
+}
+
+.market-box .box-title {
+  color: #004a99;
+}
+
+.market-box .box-link {
+  color: #004a99;
+}
+
+/* ---------- Responsive ---------- */
 @media (min-width: 1600px) {
-  .grid-container {
-    max-width: 1300px;
-    margin: 0 auto;
-  }
+  .grid-container { max-width: 1300px; margin: 0 auto; }
 }
 
 @media (max-width: 480px) {
-  .pf-start-row {
-    flex-direction: column;
-    gap: .5rem;
-  }
+  .pf-start-row { flex-direction: column; gap: .5rem; }
+  .box-header { flex-direction: column; align-items: flex-start; }
+  .box-logo { margin-top: 6px; }
 }
 
 footer {
@@ -343,107 +352,3 @@ footer {
   padding: 1rem;
   color: var(--muted);
 }
-.device-item {
-  display: flex;
-  flex-direction: column;
-  background: #f8faff;
-  border: 1px solid #dde3f0;
-  border-radius: 8px;
-  padding: 6px 10px;
-  margin-bottom: 6px;
-  color: #0b3b66;
-}
-
-.device-line1 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #0b3b66;
-}
-
-.device-line2 {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.88rem;
-  color: #94a3b8;
-}
-
-.device-factors {
-  flex: 1;
-}
-
-.delete-btn {
-  background: none;
-  border: none;
-  color: #dc2626;
-  font-size: 1.2rem;
-  font-weight: 700;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: color 0.2s ease, transform 0.1s ease;
-}
-
-.delete-btn:hover {
-  color: #b91c1c;
-  transform: scale(1.15);
-}
-/* Dynamisches, flexibles Geräte-Layout */
-.device-item-flex {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  background: #f8faff;
-  border: 1px solid #dde3f0;
-  border-radius: 8px;
-  padding: 6px 10px;
-  margin-bottom: 8px;
-  gap: 6px;
-}
-
-.device-flex-info {
-  flex: 1 1 250px;
-  min-width: 200px;
-}
-
-.device-flex-info .main-line {
-  font-weight: 600;
-  color: #0b3b66;
-  font-size: 0.95rem;
-}
-
-.device-flex-info .sub-line {
-  font-size: 0.88rem;
-  color: #94a3b8;
-}
-
-.delete-btn {
-  background: none;
-  border: none;
-  color: #dc2626;
-  font-size: 1.3rem;
-  font-weight: 700;
-  cursor: pointer;
-  flex-shrink: 0;
-  align-self: center;
-  transition: color 0.2s ease, transform 0.1s ease;
-}
-
-.delete-btn:hover {
-  color: #b91c1c;
-  transform: scale(1.1);
-}
-
-/* Mobile: ✖ wandert automatisch unter den Text */
-@media (max-width: 480px) {
-  .device-item-flex {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .delete-btn {
-    align-self: flex-end;
-    margin-top: 4px;
-  }
-}
-
