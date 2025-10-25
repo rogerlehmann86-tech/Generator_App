@@ -36,34 +36,34 @@
 
       <!-- PF & Ia Gruppe -->
       <div class="param-group">
-       <div class="checkline">
-  <input type="checkbox" id="startSurge">
-  <label for="startSurge">Betriebs- und Anlaufkennwerte</label>
-  <button type="button" class="info-btn" title="Erklärung anzeigen">ℹ️</button>
+        <div class="checkline">
+          <input type="checkbox" id="startSurge">
+          <label for="startSurge">Betriebs- und Anlaufkennwerte</label>
+          <button type="button" class="info-btn" title="Erklärung anzeigen">ℹ️</button>
+          <div class="info-tooltip">
+            <strong>Was sind Betriebs- und Anlaufkennwerte?</strong><br><br>
+            Viele Geräte brauchen beim Start für kurze Zeit deutlich mehr Strom als im Dauerbetrieb – 
+            zum Beispiel Elektromotoren, Kompressoren oder Kühlschränke.  
+            <br><br>
+            Der Leistungsfaktor (<em>cos φ</em>) beschreibt, wie „effizient“ ein Gerät elektrische Leistung nutzt.  
+            Der Anlaufstrom-Faktor (<em>Iₐ</em>) zeigt, wie stark die Stromaufnahme beim Einschalten ansteigt.  
+            <br><br>
+            Diese Werte helfen, die Generatorgröße realistischer zu berechnen, 
+            damit er beim Start solcher Geräte nicht überlastet wird.
+          </div>
+        </div>
 
-  <div class="info-tooltip">
-    <strong>Was sind Betriebs- und Anlaufkennwerte?</strong><br><br>
-    Viele Geräte brauchen beim Start für kurze Zeit deutlich mehr Strom als im Dauerbetrieb – 
-    zum Beispiel Elektromotoren, Kompressoren oder Kühlschränke.  
-    <br><br>
-    Der Leistungsfaktor (<em>cos φ</em>) beschreibt, wie „effizient“ ein Gerät elektrische Leistung nutzt.  
-    Der Anlaufstrom-Faktor (<em>Iₐ</em>) zeigt, wie stark die Stromaufnahme beim Einschalten ansteigt.  
-    <br><br>
-    Diese Werte helfen, die Generatorgröße realistischer zu berechnen, 
-    damit er beim Start solcher Geräte nicht überlastet wird.
+<div class="pf-start-row">
+  <div class="half input-with-unit">
+    <input type="number" id="pf" step="0.05" min="0.1" max="1">
+    <span class="unit-label">cos φ</span>
+  </div>
+  <div class="half input-with-unit">
+    <input type="number" id="startMult" step="0.1" min="1">
+    <span class="unit-label">Iₐ</span>
   </div>
 </div>
 
-
-        <div class="pf-start-row">
-          <div class="half">
-            <input type="number" id="pf" placeholder="cos φ" step="0.05" min="0.1" max="1">
-          </div>
-          <div class="half">
-            <input type="number" id="startMult" placeholder="Iₐ" step="0.1" min="1">
-          </div>
-        </div>
-      </div>
 
       <button id="addDevice">➕ Gerät hinzufügen</button>
     </section>
@@ -93,7 +93,6 @@
     <p>© 2025 Lehmann GT – Generator Leistungsrechner</p>
   </footer>
 
-  <!-- verstecktes Logo für PDF -->
   <img id="pdfLogo" src="logo-lgt-blau.jpg" alt="" style="display:none">
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -109,5 +108,4 @@
   </script>
 </body>
 </html>
-
 

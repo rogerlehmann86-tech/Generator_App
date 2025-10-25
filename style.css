@@ -1,5 +1,5 @@
 /* =========================================
-   GeneratorCalc v5.4 – Layout & Design
+   GeneratorCalc v5.5.1 – Layout & Design
    ========================================= */
 
 /* ---------- Farbdefinitionen ---------- */
@@ -43,6 +43,8 @@ header.app-header {
 header h1 {
   margin: .25rem 0 .25rem;
   font-size: clamp(1.4rem, 2.6vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 header p {
@@ -84,9 +86,7 @@ input, select, button {
   transition: all .2s ease;
 }
 
-input::placeholder {
-  color: #97a6c6;
-}
+input::placeholder { color: #97a6c6; }
 
 input:focus, select:focus {
   outline: none;
@@ -108,13 +108,8 @@ button:hover {
   transform: translateY(-1px);
 }
 
-button.danger {
-  background: #dc2626;
-}
-
-button.danger:hover {
-  background: #b91c1c;
-}
+button.danger { background: #dc2626; }
+button.danger:hover { background: #b91c1c; }
 
 /* ---------- PF / Ia Gruppe ---------- */
 .param-group {
@@ -131,52 +126,71 @@ button.danger:hover {
 /* ---------- Betriebs- und Anlaufkennwerte ---------- */
 .checkline {
   display: flex;
-  flex-wrap: wrap;              /* ✅ erlaubt Umbruch bei kleinen Bildschirmen */
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;      /* ✅ mittig horizontal ausrichten */
+  justify-content: center;
   gap: 0.5rem;
   font-weight: 600;
   font-size: 1rem;
   color: #0b3b66;
   text-align: center;
   margin-bottom: 0.8rem;
+  position: relative;
 }
 
 .checkline input[type="checkbox"] {
   transform: scale(1.25);
   accent-color: var(--primary);
-  flex-shrink: 0;
 }
 
-.checkline label {
-  flex: 1 1 auto;
-  text-align: center;
-  line-height: 1.4;
+.info-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.2s ease;
 }
 
-.pf-start-row {
-  display: flex;
-  gap: .8rem;
-  width: 100%;
-}
+.info-btn:hover { color: var(--primary-dark); }
 
-.pf-start-row .half {
-  flex: 1;
-}
-
-.pf-start-row input {
-  text-align: center;
+.info-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  color: #0b3b66;
   border: 1px solid #c6d4f8;
   border-radius: 8px;
-  padding: .55rem;
-  font-size: 1rem;
-  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  padding: 0.75rem 1rem;
+  width: 270px;
+  font-size: 0.9rem;
+  z-index: 50;
 }
 
-.pf-start-row input::placeholder {
-  color: #6b7a9c;
-  font-weight: 500;
-  letter-spacing: .03em;
+.info-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: #fff transparent transparent transparent;
+}
+
+.checkline.show-tooltip .info-tooltip {
+  display: block;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, 5px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
 }
 
 /* ---------- Geräte-Liste ---------- */
@@ -197,23 +211,10 @@ button.danger:hover {
   margin-bottom: 6px;
   font-size: 0.95rem;
   color: #0b3b66;
-  /* FIX ↓↓↓ */
   white-space: normal;
-  overflow: visible;
-}
-#deviceList li span {
-  flex: 1;
-  line-height: 1.4;
 }
 
-
-#deviceList li em {
-  font-style: normal;
-  color: #666;
-  font-size: 0.9rem;
-  margin-left: 8px;
-}
-
+#deviceList li span { flex: 1; line-height: 1.4; }
 #deviceList li button {
   background: none;
   border: none;
@@ -221,149 +222,147 @@ button.danger:hover {
   font-size: 1.1rem;
   cursor: pointer;
   margin-left: 10px;
-  flex-shrink: 0;
 }
-
-#deviceList li button:hover {
-  color: #b91c1c;
-}
-
-/* ---------- Diagramm ---------- */
-.chart-wrap { width: 100%; }
-#loadChart {
-  width: 100%;
-  height: 240px !important;
-  max-height: 260px;
-  display: block;
-  margin: 0 auto;
-}
-.muted {
-  color: var(--muted);
-  font-size: .95rem;
-  margin-top: .25rem;
-}
+#deviceList li button:hover { color: #b91c1c; }
 
 /* ---------- Ergebnisboxen ---------- */
 .result-box {
-  border-radius: 12px;
-  padding: 14px 18px;
-  margin-bottom: 14px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif;
+  border-radius: 14px;
+  padding: 0.9rem 1.4rem 1.2rem;
+  margin-top: 1.2rem;
+  background: linear-gradient(145deg, #4FA2FF, #A3D5FF);
+  border: 2px solid #ffffff88;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-
 .result-box:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  border-color: #ffffffcc;
+  cursor: pointer;
 }
 
-/* Kopfzeile */
-.box-header {
+/* gesamte Box klickbar */
+.linkbox { text-decoration: none; color: inherit; display: block; }
+
+/* Layout: Text links, Logo rechts */
+.box-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
+  gap: 1rem;
 }
 
-.box-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-.box-logo {
-  height: 34px;
-  width: auto;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
-}
-
-/* Inhalt */
-.box-body {
-  font-size: 1rem;
-  color: #0b3b66;
+.box-text {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  justify-content: center;
+  gap: 0.4rem;
 }
 
-.device-name {
-  font-weight: 600;
-  color: #000;
+/* Box-Titel (gleiche Schriftart wie Header + Schatten/Glow) */
+.box-title {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.7rem;
+  color: #fff;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.02em;
+  text-shadow:
+    0 2px 4px rgba(0, 59, 122, 0.65),
+    0 0 10px rgba(255, 255, 255, 0.25);
 }
 
-.device-spec {
-  font-weight: 500;
-  color: #333;
+/* Einheitliche Textstruktur */
+.box-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  color: #fff;
+  margin-top: 0.2rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-weight: 400;
 }
 
+/* Hauptinfos (Modell / Größenempfehlung) */
+.device-name,
 .device-need {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+/* Nebeninfos */
+.device-spec,
+.device-fuel,
+.device-extra {
+  font-weight: 400;
   font-size: 0.95rem;
-  color: #444;
+  color: #ffffffee;
 }
 
-/* Link in eigener Zeile */
-.box-link {
-  color: inherit;
-  font-weight: 600;
-  text-decoration: none;
-  font-size: 0.95rem;
-  margin-top: 6px;
+/* Hinweis unten */
+.click-hint {
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  color: #ffffffcc;
+  font-style: italic;
 }
 
-.box-link:hover {
-  text-decoration: underline;
+/* Logo rechts mit Hover-Effekt */
+.box-logo-wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 🔴 Mietgeräte-Empfehlung (weiß, roter Rand) */
-.rent-box {
-  background: #ffffff;
-  border: 2px solid #d00000;
+.box-logo-large {
+  width: 130px;
+  height: auto;
+  border-radius: 6px;
+  background: #fff;
+  padding: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.linkbox:hover .box-logo-large,
+.market-box:hover .box-logo-large {
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(255,255,255,0.5);
 }
 
-.rent-box .box-title {
-  color: #b40000;
-}
-
-.rent-box .box-link {
-  color: #b40000;
-}
-
-/* 🔵 Markt-Empfehlung (hellblau gefüllt, blauer Rand) */
+/* Marktbox leicht heller */
 .market-box {
-  background: #f0f6ff;
-  border: 2px solid #0055a5;
+  background: linear-gradient(145deg, #7EC3FF, #A3D5FF);
+  border: 2px solid #ffffffcc;
+  position: relative;
+  overflow: hidden;
 }
-
-.market-box .box-title {
-  color: #004a99;
-}
-
-.market-box .box-link {
-  color: #004a99;
+.market-box::before {
+  content: "⚙️";
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 1.4rem;
+  opacity: 0.15;
+  transform: rotate(-10deg);
 }
 
 /* ---------- Responsive ---------- */
-@media (min-width: 1600px) {
-  .grid-container { max-width: 1300px; margin: 0 auto; }
-}
-
-@media (max-width: 480px) {
-  .pf-start-row { flex-direction: column; gap: .5rem; }
-  .box-header { flex-direction: column; align-items: flex-start; }
-  .box-logo { margin-top: 6px; }
-}
-@media (max-width: 480px) {
-  .checkline {
+@media (max-width: 600px) {
+  .box-content {
     flex-direction: column;
-    gap: 0.3rem;
-  }
-
-  .checkline label {
     text-align: center;
   }
+  .box-logo-large {
+    width: 100px;
+    margin-top: 0.5rem;
+  }
 }
-
 
 footer {
   text-align: center;
@@ -371,123 +370,225 @@ footer {
   padding: 1rem;
   color: var(--muted);
 }
-/* ---------- Geräteanzeige mit 2 Zeilen ---------- */
+/* ---------- Neue rote Totalleistungsbedarf-Box ---------- */
+.danger-box {
+  background: #dc2626;
+  color: #fff;
+  border: 2px solid #ffffffaa;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.danger-box .box-title {
+  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+.danger-box .device-need {
+  font-size: 1.3rem;
+}
+/* ---------- Geräteliste Layout ---------- */
 .device-item {
+  position: relative;
+  padding: 6px 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.device-header {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
-  background: #f8faff;
-  border: 1px solid #dde3f0;
-  border-radius: 8px;
-  padding: 8px 10px;
-  margin-bottom: 6px;
-  color: #0b3b66;
+  align-items: baseline;
 }
 
-.device-text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  overflow: visible;
+.device-name {
+  font-weight: 700;
+  font-size: 1rem;
 }
 
-.device-main {
-  font-weight: 600;
-  color: #0b3b66;
-  line-height: 1.3;
+.device-watt {
+  font-weight: 400;
+  font-size: 0.95rem;
+  color: #333;
 }
 
 .device-details {
-  font-size: 0.85rem;
-  color: #64748b;
-  line-height: 1.2;
+  font-size: 0.9rem;
+  color: #444;
+  margin-top: 2px;
 }
 
-.device-item button {
+.delete-device {
+  position: absolute;
+  right: 8px;
+  top: 8px;
   background: none;
   border: none;
   color: #dc2626;
-  font-size: 1.2rem;
+  font-size: 1rem;
   cursor: pointer;
-  margin-left: 10px;
 }
 
-.device-item button:hover {
-  color: #b91c1c;
+.delete-device:hover {
+  color: #a00;
 }
-/* ---------- Info-Button + Tooltip (fix) ---------- */
-.checkline {
+/* ---- Geräteliste: Titel vollständig, Watt mit W auf derselben Zeile ---- */
+.device-text {
+  flex: 1;
+}
+
+.device-header-list {
   display: flex;
-  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;              /* erlaubt Umbruch nach Wattzahl */
+  white-space: normal;          /* Titel darf umbrechen */
+}
+
+.device-name-list {
+  font-weight: 700;
+  color: #0b3b66;
+  font-size: 1rem;
+  flex: 1 1 auto;
+  white-space: normal;          /* darf über mehrere Zeilen gehen */
+  overflow: visible;
+}
+
+.device-watt-list {
+  font-weight: 400;
+  color: #334155;
+  font-size: 0.95rem;
+  margin-left: 0.3rem;
+  flex-shrink: 0;
+  white-space: nowrap;          /* Zahl + W immer zusammen */
+}
+
+.device-details-list {
+  margin-top: 2px;
+  font-size: 0.9rem;
+  color: #445b78;
+}
+/* ---------- Eingabefelder mit Formelzeichen ---------- */
+.input-with-unit {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-unit input[type="number"] {
+  flex: 1;
+  padding-right: 2.5rem; /* Platz für Formelzeichen */
+  text-align: right;     /* Zahl rechtsbündig, sauber vor dem Symbol */
+}
+
+.unit-label {
+  position: absolute;
+  right: 0.6rem;
+  color: #555;
+  font-size: 0.95rem;
+  pointer-events: none;
+  opacity: 0.8;
+  font-family: "Segoe UI", sans-serif;
+}
+/* ---------- Kleine Kreisdiagramme in Ergebnisboxen ---------- */
+.mini-chart-wrap {
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  font-size: 1rem;
-  color: #0b3b66;
-  text-align: center;
-  margin-bottom: 0.8rem;
-  position: relative; /* ✅ Tooltip bleibt in dieser Box */
+  width: 70px;
+  height: 70px;
+  margin-right: 10px;
 }
 
-.info-btn {
-  background: none;
-  border: none;
-  color: var(--primary);
-  font-size: 1.1rem;
-  cursor: pointer;
-  padding: 0 4px;
-  line-height: 1;
-  transition: color 0.2s ease;
-  z-index: 5;
+.result-box .box-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+/* ---------- Ergebnisbox: Logo & Kreisdiagramm ---------- */
+.box-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px; /* etwas mehr Abstand, damit Logo und Diagramm nicht zu dicht sind */
 }
 
-.info-btn:hover {
-  color: var(--primary-dark);
+.mini-chart-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
 }
 
-/* Tooltip-Box */
-.info-tooltip {
-  display: none;
-  position: absolute;
-  bottom: 125%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #fff;
-  color: #0b3b66;
-  border: 1px solid #c6d4f8;
+.box-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🔁 Logo-Größe wieder wie ursprünglich */
+.box-logo-large {
+  height: 180px;     /* früher war es etwa doppelt so groß */
+  width: auto;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  padding: 0.75rem 1rem;
-  width: 270px;
-  font-size: 0.9rem;
-  text-align: left;
-  z-index: 50; /* ✅ liegt jetzt über allen Elementen */
+  object-fit: contain;
+}
+/* ---------- Ergebnisbox: große Logos + Titel bleibt einzeilig ---------- */
+.result-box .box-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 12px;
 }
 
-/* kleiner Pfeil unter dem Tooltip */
-.info-tooltip::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -6px;
-  border-width: 6px;
-  border-style: solid;
-  border-color: #fff transparent transparent transparent;
+/* linker Textteil darf sich ausdehnen */
+.result-box .box-text {
+  flex: 1 1 auto;
+  min-width: 0; /* wichtig für flexibles Ellipsis-Verhalten */
 }
 
-/* Tooltip sichtbar */
-.checkline.show-tooltip .info-tooltip {
-  display: block;
-  animation: fadeIn 0.2s ease-out;
+/* rechter Block (Diagramm + Logo) bekommt fixe Maximalbreite */
+.box-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  gap: 12px;
+  max-width: 240px; /* passt zu großem Logo + Kreis */
 }
 
-/* sanftes Einblenden */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translate(-50%, 5px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+.mini-chart-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  margin-top: 10px;
 }
 
+.mini-chart-wrap canvas {
+  width: 60px;
+  height: 60px;
+}
 
+.chart-caption {
+  font-size: 0.75rem;
+  color: #ffffff; /* weiß für dunkle Boxen */
+  text-align: center;
+  margin-top: 4px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+/* Logo groß, aber Platz kontrolliert */
+.box-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box-logo-large {
+  height: 180px;      /* dein gewünschtes großes Logo */
+  width: auto;
+  border-radius: 8px;
+  object-fit: contain;
+  max-width: 160px;   /* verhindert, dass es den Text zu stark verdrängt */
+}
