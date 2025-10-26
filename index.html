@@ -94,13 +94,33 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="app.js"></script>
 
-  <script>
-    if ('serviceWorker' in navigator && window.top === window.self) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log("✅ Service Worker aktiv"))
-        .catch(err => console.log("❌ Service Worker Fehler:", err));
+<script>
+if ('serviceWorker' in navigator && window.top === window.self) {
+  navigator.serviceWorker.register('service-worker.js').then(reg => {
+    console.log("✅ Service Worker registriert:", reg.scope);
+
+    // Prüfen, ob eine neue Version bereitsteht
+    if (reg.waiting) {
+      console.log("🔁 Neue Version bereit – wird aktiviert …");
+      reg.waiting.postMessage('SKIP_WAITING');
+      window.location.reload();
     }
-  </script>
+
+    // Wenn eine neue Version installiert wird
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          console.log("⚙️ Neue Version erkannt – automatisches Update …");
+          newWorker.postMessage('SKIP_WAITING');
+          window.location.reload();
+        }
+      });
+    });
+  }).catch(err => console.log("❌ Service Worker Fehler:", err));
+}
+</script>
+
 </body>
 </html>
 

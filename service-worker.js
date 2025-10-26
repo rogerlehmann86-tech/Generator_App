@@ -1,4 +1,9 @@
-const CACHE_NAME = 'generator-app-v5_0';
+// --------------------
+// Lehmann GT – Generator Leistungsrechner
+// Service Worker mit automatischer Update-Erkennung
+// --------------------
+
+const CACHE_NAME = 'generator-app-v6_auto';
 const FILES_TO_CACHE = [
   '/',
   '/index.html',
@@ -7,29 +12,34 @@ const FILES_TO_CACHE = [
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
-  '/logo-lgt-blau.jpg'
+  '/logo-lgt-blau.jpg',
+  '/Bild Generatorvermietung.jpg'
 ];
 
-// Deaktiviere Service Worker im lokalen Umfeld (z. B. bei Entwicklung)
+// Lokaler Entwicklungsmodus → kein echtes Caching
 if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') {
-  console.log("🧰 Dev-Modus erkannt – Service Worker wird nicht aktiviert.");
+  console.log("🧰 Dev-Modus erkannt – Service Worker deaktiviert.");
   self.addEventListener('install', e => self.skipWaiting());
   self.addEventListener('activate', e => self.registration.unregister());
   self.addEventListener('fetch', e => e.respondWith(fetch(e.request)));
 } else {
 
-  // ---------- INSTALLATION ----------
+  // --------------------
+  // INSTALLATION
+  // --------------------
   self.addEventListener('install', evt => {
-    console.log("📦 Service Worker installiert (Cache v5.0)");
+    console.log("📦 Service Worker installiert (Cache:", CACHE_NAME, ")");
     evt.waitUntil(
       caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
     );
-    self.skipWaiting();
+    self.skipWaiting(); // sofort aktivieren
   });
 
-  // ---------- AKTIVIERUNG ----------
+  // --------------------
+  // AKTIVIERUNG
+  // --------------------
   self.addEventListener('activate', evt => {
-    console.log("🔁 Alte Caches werden entfernt …");
+    console.log("♻️ Alte Caches werden entfernt …");
     evt.waitUntil(
       caches.keys().then(keys =>
         Promise.all(keys
@@ -41,12 +51,14 @@ if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.
     self.clients.claim();
   });
 
-  // ---------- FETCH ----------
+  // --------------------
+  // FETCH
+  // --------------------
   self.addEventListener('fetch', evt => {
     evt.respondWith(
       fetch(evt.request)
         .then(response => {
-          // Erfolgreich aus Netz → Cache aktualisieren
+          // Erfolgreich aus dem Netz → Cache aktualisieren
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(evt.request, clone));
           return response;
@@ -55,4 +67,16 @@ if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.
     );
   });
 
+  // --------------------
+  // AUTO-UPDATE MECHANISMUS
+  // --------------------
+  // Wird vom Client (index.html) getriggert, um sofort neue Version zu aktivieren
+  self.addEventListener('message', (event) => {
+    if (event.data === 'SKIP_WAITING') {
+      console.log("⚡ Neuer Service Worker wird sofort aktiviert …");
+      self.skipWaiting();
+    }
+  });
+
 }
+

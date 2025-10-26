@@ -202,20 +202,26 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </a>
 
-      <div class="result-box market-box">
-        <div class="box-content">
-          <div class="box-text">
-            <h3 class="box-title">Marktübliche Empfehlung</h3>
-            <div class="box-body">
-              <span class="device-name">Generatorgröße: ${s.marketKVA.toFixed(1)} kVA (≈ ${s.marketKW.toFixed(1)} kW)</span>
-            </div>
-          </div>
-          <div class="box-right">
-            <div class="mini-chart-wrap">
-              <canvas id="marketChart" width="60" height="60"></canvas>
-              <div class="chart-caption">Auslastung</div>
-            </div>
-            <div class="box-logo-wrap"><img src="Bild Generatorvermietung.jpg" alt="Lehmann GT" class="box-logo-large"></div>
+<!-- Produkte Empfehlung -->
+<a href="https://lehmann-gt.ch/produkte/generatoren-wasserpumpen/" target="_blank" class="result-box market-box linkbox">
+  <div class="box-content">
+    <div class="box-text">
+      <h3 class="box-title">Produkte Empfehlung</h3>
+      <div class="box-body">
+        <span class="device-name">Generatorgröße: ${s.marketKVA.toFixed(1)} kVA (≈ ${s.marketKW.toFixed(1)} kW)</span>
+        <span class="click-hint">➡ Mehr Infos auf lehmann-gt.ch</span>
+      </div>
+    </div>
+    <div class="box-right">
+      <div class="mini-chart-wrap">
+        <canvas id="marketChart" width="60" height="60"></canvas>
+        <div class="chart-caption">Auslastung</div>
+      </div>
+      <div class="box-logo-wrap"><img src="Bild Generatorvermietung.jpg" alt="Lehmann GT" class="box-logo-large"></div>
+    </div>
+  </div>
+</a>
+
           </div>
         </div>
       </div>
@@ -265,137 +271,115 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-   // ---------- NEUER PDF-EXPORT MIT DESIGN-BOXEN ----------
-  document.getElementById("exportPDF").addEventListener("click", async () => {
-    if (!devices.length) return alert("Bitte zuerst Geräte hinzufügen.");
+ // ---------- NEUER PDF-EXPORT ----------
+document.getElementById("exportPDF").addEventListener("click", async () => {
+  if (!devices.length) return alert("Bitte zuerst Geräte hinzufügen.");
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: "mm", format: "a4" });
-    const pageWidth = doc.internal.pageSize.getWidth();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const pageWidth = doc.internal.pageSize.getWidth();
 
-    // ---------- Header ----------
-    const logo = await loadImage("logo-lgt-blau.jpg");
-    doc.addImage(logo, "JPEG", 15, 10, 40, 15);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
+  // ---------- HEADER ----------
+  const headerHeight = 30;
+  const logo = await loadImage("Bild Generatorvermietung.jpg");
+
+  // Blauer Balken
+  doc.setFillColor(0, 85, 165);
+  doc.rect(0, 0, pageWidth, headerHeight, "F");
+
+  // Logo (proportional)
+  doc.addImage(logo, "JPEG", 15, 5, 35, 20);
+
+  // Titel
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(18);
+  doc.setTextColor(255, 255, 255);
+  doc.text("Generator Leistungsrechner", 60, 17);
+
+  // Untertitel
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  doc.text("Lehmann GT GmbH – www.lehmann-gt.ch", 60, 24);
+
+  let y = headerHeight + 10;
+
+  // ---------- GERÄTELISTE ----------
+  if (devices.length) {
+    doc.setFillColor(230, 240, 255); // hellblauer Hintergrund
+    doc.roundedRect(15, y - 5, pageWidth - 30, 8 + devices.length * 6, 3, 3, "F");
+
+    doc.setFontSize(14);
     doc.setTextColor(0, 85, 165);
-    doc.text("Generator Leistungsrechner", 60, 18);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-    doc.setTextColor(60);
-    doc.text("Lehmann GT GmbH", 60, 25);
-    doc.line(15, 30, pageWidth - 15, 30);
+    doc.text("Geräteliste", 18, y);
+    y += 6;
 
-    let y = 40;
-
-    // ---------- Geräteliste ----------
-    if (devices.length) {
-      doc.setFontSize(14);
-      doc.setTextColor(0, 85, 165);
-      doc.text("Geräteliste", 15, y);
-      y += 8;
-
-      doc.setFontSize(10);
-      doc.setTextColor(0);
-      devices.forEach((d, i) => {
-        const name = d.name || `Gerät ${i + 1}`;
-        const watt = `${d.watt ?? 0} W`;
-        const pf = d.useFactors ? `cos φ ${d.pf ?? 1}` : "";
-        const ia = d.useFactors ? `Iₐ ${d.startMult ?? 1}` : "";
-        doc.text(`${i + 1}. ${name}`, 18, y);
-        doc.text(watt, 110, y);
-        if (pf) doc.text(pf, 140, y);
-        if (ia) doc.text(ia, 165, y);
-        y += 6;
-        if (y > 250) { doc.addPage(); y = 20; }
-      });
-      y += 10;
-    }
-
-    // ---------- Ergebnisse ----------
-    const s = computeSummary(devices);
-
-    // Boxfarben (RGB)
-    const red = [220, 38, 38];
-    const blue = [11, 59, 102];
-    const darkblue = [0, 85, 165];
-
-    // Box-Zeichenfunktion
-    async function drawBox({ y, color, title, lines = [], logo, logoW = 40, logoH = 20 }) {
-      const x = 15;
-      const boxW = pageWidth - 30;
-      const lineH = 7;
-      const contentH = (lines.length + 2) * lineH;
-      const boxH = contentH + 10;
-
-      // Hintergrund
-      doc.setFillColor(...color);
-      doc.roundedRect(x, y, boxW, boxH, 3, 3, "F");
-
-      // Text
-      doc.setTextColor(255, 255, 255);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(13);
-      doc.text(title, x + 8, y + 12);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
-      lines.forEach((t, i) => doc.text(t, x + 8, y + 22 + i * lineH));
-
-      // Logo proportional
-      if (logo) {
-        const imgData = await loadImage(logo);
-        const img = new Image();
-        img.src = logo;
-        await new Promise(res => (img.onload = res));
-        const ratio = img.width / img.height;
-        let w = logoW;
-        let h = logoW / ratio;
-        if (h > logoH) { h = logoH; w = h * ratio; }
-        doc.addImage(imgData, "JPEG", pageWidth - w - 20, y + 8, w, h);
-      }
-
-      return y + boxH + 10;
-    }
-
-    // Boxen darstellen
-    y = await drawBox({
-      y,
-      color: red,
-      title: "Gesamtleistungsbedarf",
-      lines: [`${s.totalKVA.toFixed(2)} kVA  (≈ ${s.totalKW.toFixed(2)} kW)`],
-      logo: "logo-lgt-blau.jpg"
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    devices.forEach((d, i) => {
+      const name = d.name || `Gerät ${i + 1}`;
+      const watt = `${d.watt ?? 0} W`;
+      const pf = d.useFactors ? `cos φ ${d.pf ?? 1}` : "";
+      const ia = d.useFactors ? `Iₐ ${d.startMult ?? 1}` : "";
+      doc.text(`${i + 1}. ${name}`, 20, y);
+      doc.text(watt, 110, y);
+      if (pf) doc.text(pf, 140, y);
+      if (ia) doc.text(ia, 165, y);
+      y += 6;
+      if (y > 260) { doc.addPage(); y = 20; }
     });
+  }
 
-    y = await drawBox({
-      y,
-      color: blue,
-      title: "Marktübliche Empfehlung",
-      lines: [
-        `Generatorgröße: ${s.marketKVA.toFixed(1)} kVA`,
-        `(≈ ${s.marketKW.toFixed(1)} kW)`
-      ],
-      logo: "Bild Generatorvermietung.jpg"
-    });
+  // ---------- ERGEBNISSE ----------
+  const s = computeSummary(devices);
+  y += 10;
 
-    y = await drawBox({
-      y,
-      color: darkblue,
-      title: "Mietgeräte Empfehlung",
-      lines: [
-        s.rental.name,
-        `${s.rental.kva.toFixed(1)} kVA / ${s.rental.kw.toFixed(1)} kW`,
-        s.rental.fuel
-      ],
-      logo: "Bild Generatorvermietung.jpg"
-    });
+  // Gesamtleistungsbedarf (rote Box, schmal)
+  doc.setFillColor(220, 38, 38);
+  doc.roundedRect(15, y, pageWidth - 30, 18, 3, 3, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(14);
+  doc.text("Gesamtleistungsbedarf", 20, y + 7);
+  doc.setFontSize(12);
+  doc.text(`${s.totalKVA.toFixed(2)} kVA (≈ ${s.totalKW.toFixed(2)} kW)`, 20, y + 14);
+  y += 28;
 
-    // ---------- Fußzeile ----------
-    doc.setFontSize(9);
-    doc.setTextColor(100);
-    doc.text(`Erstellt am ${new Date().toLocaleDateString()} – www.lehmann-gt.ch`, 15, 285);
+  // Produkte Empfehlung (hellblau)
+  const gradTop = [126, 195, 255];
+  const gradBottom = [163, 213, 255];
+  doc.setFillColor(gradTop[0], gradTop[1], gradTop[2]);
+  doc.roundedRect(15, y, pageWidth - 30, 25, 3, 3, "F");
+  doc.setTextColor(0, 59, 102);
+  doc.setFontSize(14);
+  doc.text("Produkte Empfehlung", 20, y + 7);
+  doc.setFontSize(11);
+  doc.setTextColor(0);
+  doc.text(`Generatorgröße: ${s.marketKVA.toFixed(1)} kVA (≈ ${s.marketKW.toFixed(1)} kW)`, 20, y + 14);
+  doc.setFontSize(9);
+  doc.setTextColor(60);
+  doc.text("➡ Mehr Infos auf lehmann-gt.ch/produkte/generatoren-wasserpumpen/", 20, y + 21);
+  y += 35;
 
-    doc.save("Generator_Leistungsrechner.pdf");
-  });
+  // Mietgeräte Empfehlung (hellblau)
+  doc.setFillColor(79, 162, 255);
+  doc.roundedRect(15, y, pageWidth - 30, 30, 3, 3, "F");
+  doc.setFontSize(14);
+  doc.setTextColor(255, 255, 255);
+  doc.text("Mietgeräte Empfehlung", 20, y + 7);
+  doc.setFontSize(11);
+  doc.text(`${s.rental.name}`, 20, y + 14);
+  doc.text(`${s.rental.kva.toFixed(1)} kVA / ${s.rental.kw.toFixed(1)} kW`, 20, y + 20);
+  doc.text(`${s.rental.fuel}`, 20, y + 26);
+  doc.setFontSize(9);
+  doc.text("➡ Mehr Infos auf lehmann-gt.ch", 20, y + 32);
+  y += 40;
+
+  // ---------- FUSSZEILE ----------
+  doc.setFontSize(9);
+  doc.setTextColor(120);
+  doc.text(`Erstellt am ${new Date().toLocaleDateString()} – www.lehmann-gt.ch`, 15, 285);
+
+  doc.save("Generator_Leistungsrechner.pdf");
+});
 
   // ---------- Hilfsfunktion zum Laden von Bildern ----------
   async function loadImage(src) {
