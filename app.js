@@ -1,40 +1,38 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("GeneratorCalc v5.7.2 – Diagramm + Logo + Beschriftung");
 
-  // ---------- Lehmann GT Mietgeräte ----------
-  const rentalGenerators = [
-    { name: "Honda EU20i", kva: 2.0, kw: 1.6, fuel: "Benzin – Inverter", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/benzin-generator-stromerzeuger-honda-eu20i/" },
-    { name: "CGM CX7000t", kva: 7.0, kw: 5.6, fuel: "Benzin – AVR-Regelung", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/benzin-generator-stromerzeuger-cgm-cx7000t/" },
-    { name: "CGM S9000Dual", kva: 9.0, kw: 8.0, fuel: "Diesel – AVR-Regelung", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/benzin-generator-stromerzeuger-cgm-s9000dual/" },
-    { name: "CGM V18Y", kva: 18.0, kw: 16.0, fuel: "Diesel – stationär – AVR-Regelung", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/diesel-generator-stromerzeuger-cgm-industrial-v18y/" },
-    { name: "CGM V60F", kva: 60.0, kw: 48.0, fuel: "Diesel – stationär – AVR-Regelung", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/diesel-generator-stromerzeuger-cgm-rnt-v60f/" }
-  ];
+// ---------- Lehmann GT Mietgeräte ----------
+const rentalGenerators = [
+  { name: "Honda EU20i", kva: 2.0, kw: 1.6, fuel: "Benzin – Inverter", voltageSupport: "230V", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/benzin-generator-stromerzeuger-honda-eu20i/" },
+  { name: "CGM CX7000t", kva: 7.0, kw: 5.6, fuel: "Benzin – AVR-Regelung", voltageSupport: "230/400V", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/benzin-generator-stromerzeuger-cgm-cx7000t/" },
+  { name: "CGM S9000Dual", kva: 9.0, kw: 8.0, fuel: "Diesel – AVR-Regelung", voltageSupport: "230/400V", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/benzin-generator-stromerzeuger-cgm-s9000dual/" },
+  { name: "CGM V18Y", kva: 18.0, kw: 16.0, fuel: "Diesel – stationär – AVR-Regelung", voltageSupport: "230/400V", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/diesel-generator-stromerzeuger-cgm-industrial-v18y/" },
+  { name: "CGM V60F", kva: 60.0, kw: 48.0, fuel: "Diesel – stationär – AVR-Regelung", voltageSupport: "230/400V", link: "https://lehmann-gt.ch/dienstleistungen/mietgeraete/miet-generatoren/diesel-generator-stromerzeuger-cgm-rnt-v60f/" }
+];
 
-  // ---------- Gerätekategorien ----------
-  const categories = {
-    "Werkzeuge": [
-      { name: "Bohrmaschine", watt: 800, pf: 0.9, startSurge: true, startMult: 2.5 },
-      { name: "Winkelschleifer", watt: 1200, pf: 0.85, startSurge: true, startMult: 2.5 },
-      { name: "Stichsäge", watt: 700, pf: 0.9, startSurge: true, startMult: 2.2 },
-      { name: "Bohrhammer", watt: 1500, pf: 0.85, startSurge: true, startMult: 2.5 }
-    ],
-    "Haushalt": [
-      { name: "Kühlschrank", watt: 150, pf: 0.8, startSurge: true, startMult: 3 },
-      { name: "Gefriertruhe", watt: 200, pf: 0.8, startSurge: true, startMult: 3 },
-      { name: "Wasserkocher", watt: 1800, pf: 1.0, startSurge: false, startMult: 1 },
-      { name: "Mikrowelle", watt: 1200, pf: 0.9, startSurge: true, startMult: 1.2 }
-    ],
-    "Baumaschinen": [
-      { name: "Kompressor", watt: 1500, pf: 0.85, startSurge: true, startMult: 3 },
-      { name: "Betonmischer", watt: 1100, pf: 0.9, startSurge: true, startMult: 2.5 },
-      { name: "Trennschleifer", watt: 2000, pf: 0.85, startSurge: true, startMult: 2.5 }
-    ],
-    "Camping": [
-      { name: "Kühlbox", watt: 60, pf: 0.9, startSurge: true, startMult: 2 },
-      { name: "Wasserpumpe", watt: 100, pf: 0.85, startSurge: true, startMult: 2.5 },
-      { name: "Lichtsystem", watt: 50, pf: 0.95, startSurge: false, startMult: 1 }
-    ]
-  };
+// ---------- Gerätekategorien ----------
+const categories = {
+  "Werkzeuge": [
+    { name: "Bohrmaschine", watt: 800, pf: 0.9, startSurge: true, startMult: 2.5, voltage: "230V" },
+    { name: "Winkelschleifer", watt: 1200, pf: 0.85, startSurge: true, startMult: 2.5, voltage: "230V" },
+    { name: "Betonmischer", watt: 1100, pf: 0.9, startSurge: true, startMult: 2.5, voltage: "400V" }
+  ],
+  "Haushalt": [
+    { name: "Kühlschrank", watt: 150, pf: 0.8, startSurge: true, startMult: 3, voltage: "230V" },
+    { name: "Gefriertruhe", watt: 200, pf: 0.8, startSurge: true, startMult: 3, voltage: "230V" },
+    { name: "Wasserkocher", watt: 1800, pf: 1.0, startSurge: false, startMult: 1, voltage: "230V" }
+  ],
+  "Kühlen&Heizen": [
+    { name: "Elektroheizung", watt: 2000, pf: 1.0, startSurge: false, startMult: 1, voltage: "230V" },
+    { name: "Elektroheizung", watt: 5000, pf: 1.0, startSurge: false, startMult: 1, voltage: "400" },
+    { name: "Klimaanlage", watt: 2300, pf: 0.8, startSurge: true, startMult: 2.5, voltage: "400V" }
+  ],
+  "Baumaschinen": [
+    { name: "Kompressor", watt: 1500, pf: 0.85, startSurge: true, startMult: 3, voltage: "400V" },
+    { name: "Trennschleifer", watt: 2000, pf: 0.85, startSurge: true, startMult: 2.5, voltage: "230V" }
+  ]
+};
+  
 
   // ---------- DOM ----------
   const cat = document.getElementById("category");
@@ -131,7 +129,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const mult = parseFloat(multEl.value) || 1;
     const useFactors = surgeBox.checked;
     if (isNaN(watt) || watt <= 0) return alert("Bitte gültige Leistung angeben.");
-    devices.push({ name, watt, pf, startMult: mult, useFactors });
+    const voltage = document.getElementById("voltage").value;
+    devices.push({ name, watt, pf, startMult: mult, useFactors, voltage });
     save();
     updateAll();
     nameEl.value = wattEl.value = pfEl.value = multEl.value = "";
@@ -148,21 +147,34 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ---------- Berechnung ----------
-  function computeSummary(devs) {
-    const PF_REF_GEN = 0.8;
-    const S_total = devs.reduce((sum, d) => {
-      const P = d.watt || 0;
-      if (!d.useFactors) return sum + P;
-      return sum + (P / (d.pf || 1)) * (d.startMult || 1);
-    }, 0);
-    const totalKVA = S_total / 1000;
-    const totalKW = totalKVA * PF_REF_GEN;
-    const kVA_steps = [0.65, 0.8, 1, 1.5, 2, 2.5, 3, 4, 5, 6.5, 8, 10, 12, 15, 20];
-    const marketKVA = kVA_steps.find(s => totalKVA < s) ?? Math.ceil(totalKVA);
-    const marketKW = marketKVA * PF_REF_GEN;
-    const rental = rentalGenerators.find(r => r.kva >= marketKVA) || rentalGenerators.at(-1);
-    return { totalKW, totalKVA, marketKVA, marketKW, rental };
-  }
+function computeSummary(devs) {
+  const PF_REF_GEN = 0.8;
+  const S_total = devs.reduce((sum, d) => {
+    const P = d.watt || 0;
+    if (!d.useFactors) return sum + P;
+    return sum + (P / (d.pf || 1)) * (d.startMult || 1);
+  }, 0);
+
+  const totalKVA = S_total / 1000;
+  const totalKW = totalKVA * PF_REF_GEN;
+
+  // 🔌 Spannungsbedarf prüfen
+  const needs400V = devs.some(d => d.voltage === "400V");
+
+  // Generatorgröße bestimmen
+  const kVA_steps = [0.65, 0.8, 1, 1.5, 2, 2.5, 3, 4, 5, 6.5, 8, 10, 12, 15, 20];
+  const marketKVA = kVA_steps.find(s => totalKVA < s) ?? Math.ceil(totalKVA);
+  const marketKW = marketKVA * PF_REF_GEN;
+
+  // 🔧 Mietgerät nach Spannung und Leistung wählen
+  const rental = rentalGenerators.find(r =>
+    r.kva >= marketKVA &&
+    (needs400V ? r.voltageSupport.includes("400") : r.voltageSupport.includes("230"))
+  ) || rentalGenerators.at(-1);
+
+  return { totalKW, totalKVA, marketKVA, marketKW, rental, needs400V };
+}
+
 
   // ---------- Anzeige ----------
   function calculateAndDisplay() {
@@ -208,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="box-text">
       <h3 class="box-title">Produkte Empfehlung</h3>
       <div class="box-body">
-        <span class="device-name">Generatorgröße: ${s.marketKVA.toFixed(1)} kVA (≈ ${s.marketKW.toFixed(1)} kW)</span>
+     <span class="device-name">Generatorgröße: ${s.marketKVA.toFixed(1)} kVA (${s.needs400V ? "400 V" : "230 V"})                </span>
         <span class="click-hint">➡ Mehr Infos auf lehmann-gt.ch</span>
       </div>
     </div>
@@ -351,8 +363,8 @@ document.getElementById("exportPDF").addEventListener("click", async () => {
   doc.text("Produkte Empfehlung", 20, y + 7);
   doc.setFontSize(11);
   doc.setTextColor(0);
-  doc.text(`Generatorgröße: ${s.marketKVA.toFixed(1)} kVA`, 20, y + 13);
-  y += 25;
+  doc.text(`Generatorgröße: ${s.marketKVA.toFixed(1)} kVA (${s.needs400V ? "400 V" : "230 V"})`, 20, y + 13);
+
 
   // Mietgeräte Empfehlung (hellblau)
   doc.setFillColor(79, 162, 255);
