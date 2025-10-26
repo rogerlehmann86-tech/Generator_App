@@ -1,82 +1,73 @@
-// --------------------
-// Lehmann GT – Generator Leistungsrechner
-// Service Worker mit automatischer Update-Erkennung
-// --------------------
+/* =========================================
+   Lehmann GT – GeneratorCalc v6.3_auto
+   Auto-Update Service Worker (2025)
+   ========================================= */
 
-const CACHE_NAME = 'generator-app-v6.1_auto';
-const FILES_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/app.js',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/logo-lgt-blau.jpg',
-  '/Bild Generatorvermietung.jpg'
+const CACHE_NAME = "generator-app-v6.3_" + new Date().toISOString().slice(0, 10);
+const urlsToCache = [
+  "./",
+  "./index.html",
+  "./style.css",
+  "./app.js",
+  "./manifest.json",
+  "./logo-lgt-blau.jpg",
+  "./Bild Generatorvermietung.jpg",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
-// Lokaler Entwicklungsmodus → kein echtes Caching
-if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') {
-  console.log("🧰 Dev-Modus erkannt – Service Worker deaktiviert.");
-  self.addEventListener('install', e => self.skipWaiting());
-  self.addEventListener('activate', e => self.registration.unregister());
-  self.addEventListener('fetch', e => e.respondWith(fetch(e.request)));
-} else {
+// ---------- INSTALL ----------
+self.addEventListener("install", event => {
+  console.log("[SW] Installiere neue Version:", CACHE_NAME);
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+  );
+  self.skipWaiting(); // Neue Version sofort aktivieren
+});
 
-  // --------------------
-  // INSTALLATION
-  // --------------------
-  self.addEventListener('install', evt => {
-    console.log("📦 Service Worker installiert (Cache:", CACHE_NAME, ")");
-    evt.waitUntil(
-      caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
-    );
-    self.skipWaiting(); // sofort aktivieren
-  });
-
-  // --------------------
-  // AKTIVIERUNG
-  // --------------------
-  self.addEventListener('activate', evt => {
-    console.log("♻️ Alte Caches werden entfernt …");
-    evt.waitUntil(
-      caches.keys().then(keys =>
-        Promise.all(keys
-          .filter(k => k !== CACHE_NAME)
-          .map(k => caches.delete(k))
-        )
-      )
-    );
-    self.clients.claim();
-  });
-
-  // --------------------
-  // FETCH
-  // --------------------
-  self.addEventListener('fetch', evt => {
-    evt.respondWith(
-      fetch(evt.request)
-        .then(response => {
-          // Erfolgreich aus dem Netz → Cache aktualisieren
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(evt.request, clone));
-          return response;
+// ---------- ACTIVATE ----------
+self.addEventListener("activate", event => {
+  console.log("[SW] Aktiviere Version:", CACHE_NAME);
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.filter(key => key !== CACHE_NAME).map(key => {
+          console.log("[SW] Entferne alten Cache:", key);
+          return caches.delete(key);
         })
-        .catch(() => caches.match(evt.request)) // Offline-Fallback
-    );
-  });
+      )
+    ).then(() => self.clients.claim())
+  );
+});
 
-  // --------------------
-  // AUTO-UPDATE MECHANISMUS
-  // --------------------
-  // Wird vom Client (index.html) getriggert, um sofort neue Version zu aktivieren
-  self.addEventListener('message', (event) => {
-    if (event.data === 'SKIP_WAITING') {
-      console.log("⚡ Neuer Service Worker wird sofort aktiviert …");
-      self.skipWaiting();
-    }
-  });
+// ---------- FETCH ----------
+self.addEventListener("fetch", event => {
+  const request = event.request;
+  if (request.method !== "GET") return;
 
-}
+  event.respondWith(
+    caches.match(request).then(response => {
+      if (response) return response; // aus Cache laden
+      return fetch(request)
+        .then(networkResponse => {
+          // erfolgreiche Antwort → Cache aktualisieren
+          if (networkResponse && networkResponse.status === 200 && networkResponse.type === "basic") {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(request, responseClone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match("./index.html")); // Fallback offline
+    })
+  );
+});
+
+// ---------- MESSAGE ----------
+self.addEventListener("message", event => {
+  if (event.data === "SKIP_WAITING") {
+    console.log("[SW] SkipWaiting empfangen – aktiviere sofort neue Version");
+    self.skipWaiting();
+  }
+});
+
 
