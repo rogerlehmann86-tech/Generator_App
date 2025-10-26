@@ -333,42 +333,43 @@ document.getElementById("exportPDF").addEventListener("click", async () => {
   const s = computeSummary(devices);
   y += 10;
 
-  // Gesamtleistungsbedarf (rote Box, schmal)
+  // Gesamtleistungsbedarf (rote Box)
   doc.setFillColor(220, 38, 38);
   doc.roundedRect(15, y, pageWidth - 30, 18, 3, 3, "F");
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(14);
   doc.text("Gesamtleistungsbedarf", 20, y + 7);
   doc.setFontSize(12);
-  doc.text(`${s.totalKVA.toFixed(2)} kVA 
+  doc.text(`${s.totalKVA.toFixed(2)} kVA`, 20, y + 13);
+  y += 25;
 
   // Produkte Empfehlung (hellblau)
-  const gradTop = [126, 195, 255];
-  const gradBottom = [163, 213, 255];
-  doc.setFillColor(gradTop[0], gradTop[1], gradTop[2]);
+  doc.setFillColor(163, 213, 255);
   doc.roundedRect(15, y, pageWidth - 30, 25, 3, 3, "F");
-  doc.setTextColor(255, 255, 255);
+  doc.setTextColor(0, 85, 165);
   doc.setFontSize(14);
   doc.text("Produkte Empfehlung", 20, y + 7);
   doc.setFontSize(11);
   doc.setTextColor(0);
-  doc.text(`Generatorgröße: ${s.marketKVA.toFixed(1)} kVA 
+  doc.text(`Generatorgröße: ${s.marketKVA.toFixed(1)} kVA (≈ ${s.marketKW.toFixed(1)} kW)`, 20, y + 14);
   doc.setFontSize(9);
-  doc.setTextColor(255, 255, 255);
- 
+  doc.setTextColor(80);
+  doc.text("➡ Mehr Infos auf lehmann-gt.ch", 20, y + 20);
+  y += 35;
 
   // Mietgeräte Empfehlung (hellblau)
   doc.setFillColor(79, 162, 255);
   doc.roundedRect(15, y, pageWidth - 30, 30, 3, 3, "F");
-  doc.setFontSize(14);
   doc.setTextColor(255, 255, 255);
+  doc.setFontSize(14);
   doc.text("Mietgeräte Empfehlung", 20, y + 7);
   doc.setFontSize(11);
   doc.text(`${s.rental.name}`, 20, y + 14);
   doc.text(`${s.rental.kva.toFixed(1)} kVA / ${s.rental.kw.toFixed(1)} kW`, 20, y + 20);
   doc.text(`${s.rental.fuel}`, 20, y + 26);
   doc.setFontSize(9);
-  
+  doc.text("➡ Mehr Infos auf lehmann-gt.ch", 20, y + 31);
+
   // ---------- FUSSZEILE ----------
   doc.setFontSize(9);
   doc.setTextColor(120);
