@@ -890,9 +890,14 @@ footer {
     margin-top: 0.5rem;
   }
 
+@media (max-width: 700px) {
   .box-logo-large {
-    max-width: 60px;
+    max-width: 90px;     /* vorher 60px → jetzt größer */
+    height: auto;        /* proportional skalieren */
+    padding: 4px;        /* etwas Innenabstand */
   }
+}
+
 
   .box-text {
     width: 100%;
@@ -922,6 +927,58 @@ footer {
   }
   .box-logo-large {
     max-width: 50px;
+  }
+}
+/* ---------- Mobile Titelgrößen für Ergebnisboxen ---------- */
+@media (max-width: 700px) {
+  /* Titel in Ergebnisboxen wieder deutlich größer darstellen */
+  .result-box .box-title {
+    font-size: 1.4rem;          /* war 1rem, jetzt klar größer */
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;         /* mobil zentriert schöner */
+    margin-bottom: 0.4rem;
+  }
+
+  /* Restliche Texte leicht verkleinern */
+  .result-box .box-body,
+  .result-box .device-name,
+  .result-box .device-spec,
+  .result-box .device-fuel,
+  .result-box .click-hint {
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+
+  /* Gesamtleistungsbedarf-Box bleibt harmonisch */
+  .danger-box .box-title {
+    font-size: 1.3rem;
+  }
+  .danger-box .device-need {
+    font-size: 1.2rem;
+  }
+}
+/* ---------- Mobile Anpassung: Gesamtleistungsbedarf-Box ---------- */
+@media (max-width: 700px) {
+  .result-box.danger-box {
+    text-align: center;           /* wie andere Ergebnisboxen */
+    padding: 1rem 1.2rem;         /* etwas kompakter */
+  }
+
+  .result-box.danger-box .box-title {
+    font-size: 1.4rem;            /* Titel gleich groß wie bei anderen Boxen */
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+
+  .result-box.danger-box .box-body {
+    font-size: 0.95rem;           /* Fließtext gleich groß */
+    line-height: 1.3;
+  }
+
+  .result-box.danger-box .device-need {
+    font-size: 1.2rem;            /* Leistungszahl etwas größer, harmonisch */
+    font-weight: 700;
   }
 }
 
