@@ -3,7 +3,7 @@
    Auto-Update Service Worker (2025)
    ========================================= */
 
-const CACHE_NAME = "generator-app-v6.4_" + new Date().toISOString().slice(0, 10);
+const CACHE_NAME = "generator-app-v6.5_" + new Date().toISOString().slice(0, 10);
 const urlsToCache = [
   "./",
   "./index.html",

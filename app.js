@@ -351,10 +351,8 @@ document.getElementById("exportPDF").addEventListener("click", async () => {
   doc.text("Produkte Empfehlung", 20, y + 7);
   doc.setFontSize(11);
   doc.setTextColor(0);
-  doc.text(`Generatorgröße: ${s.marketKVA.toFixed(1)} kVA);
-  doc.setFontSize(9);
-  doc.setTextColor(80);
-  
+  doc.text(`Generatorgröße: ${s.marketKVA.toFixed(1)} kVA`, 20, y + 13);
+  y += 25;
 
   // Mietgeräte Empfehlung (hellblau)
   doc.setFillColor(79, 162, 255);
@@ -366,8 +364,8 @@ document.getElementById("exportPDF").addEventListener("click", async () => {
   doc.text(`${s.rental.name}`, 20, y + 14);
   doc.text(`${s.rental.kva.toFixed(1)} kVA / ${s.rental.kw.toFixed(1)} kW`, 20, y + 20);
   doc.text(`${s.rental.fuel}`, 20, y + 26);
-  doc.setFontSize(9);
-  
+  y += 35;
+
   // ---------- FUSSZEILE ----------
   doc.setFontSize(9);
   doc.setTextColor(120);
@@ -375,6 +373,7 @@ document.getElementById("exportPDF").addEventListener("click", async () => {
 
   doc.save("Generator_Leistungsrechner.pdf");
 });
+
 
   // ---------- Hilfsfunktion zum Laden von Bildern ----------
   async function loadImage(src) {
