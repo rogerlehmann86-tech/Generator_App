@@ -4,24 +4,31 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Generator Leistungsrechner</title>
-<!-- Open Graph / WhatsApp / Social Preview -->
-<meta property="og:title" content="Generator Leistungsrechner" />
-<meta property="og:description" content="Berechne die optimale Generatorgröße für deine Anwendung – Lehmann GT GmbH" />
-<meta property="og:image" content="https://rogerlehmann86-tech.github.io/Generator_App/icon-512.png" />
-<meta property="og:url" content="https://rogerlehmann86-tech.github.io/Generator_App/" />
-<meta property="og:type" content="website" />
-<meta property="og:site_name" content="Lehmann GT GmbH" />
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://rogerlehmann86-tech.github.io/Generator_App/logo-lgt-blau.jpg">
 
+  <!-- Grundlegende Styles & Manifest -->
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0055a5">
   <link rel="icon" href="icon-192.png">
+
+  <!-- 📱 iOS / Mobile PWA Unterstützung -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="GeneratorCalc">
+  <link rel="apple-touch-icon" href="icon-512.png">
+
+  <!-- 🔗 Social Preview -->
+  <meta property="og:title" content="Generator Leistungsrechner" />
+  <meta property="og:description" content="Berechne die optimale Generatorgröße für deine Anwendung – Lehmann GT GmbH" />
+  <meta property="og:image" content="https://rogerlehmann86-tech.github.io/Generator_App/logo-lgt-blau.jpg" />
+  <meta property="og:url" content="https://rogerlehmann86-tech.github.io/Generator_App/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Lehmann GT GmbH" />
 </head>
+
 <body>
   <header class="app-header">
-    <img src="logo-lgt-blau.jpg" alt="Lehmann GT Logo" class="brand-logo" />
+    <img src="logo-lgt-blau.jpg" alt="Lehmann GT Logo" class="brand-logo" width="200" height="auto" />
     <h1>Generator Leistungsrechner</h1>
     <p>Berechne die optimale Generatorgröße für deine Anwendung</p>
   </header>
@@ -63,19 +70,19 @@
           </div>
         </div>
 
-<div class="pf-start-row">
-  <div class="half input-with-unit">
-    <input type="number" id="pf" step="0.05" min="0.1" max="1">
-    <span class="unit-label">cos φ</span>
-  </div>
-  <div class="half input-with-unit">
-    <input type="number" id="startMult" step="0.1" min="1">
-    <span class="unit-label">Iₐ</span>
-  </div>
-</div>
+        <div class="pf-start-row">
+          <div class="half input-with-unit">
+            <input type="number" id="pf" step="0.05" min="0.1" max="1">
+            <span class="unit-label">cos φ</span>
+          </div>
+          <div class="half input-with-unit">
+            <input type="number" id="startMult" step="0.1" min="1">
+            <span class="unit-label">Iₐ</span>
+          </div>
+        </div>
 
-
-      <button id="addDevice">➕ Gerät hinzufügen</button>
+        <button id="addDevice">➕ Gerät hinzufügen</button>
+      </div>
     </section>
 
     <!-- Geräteliste -->
@@ -89,7 +96,6 @@
     <section class="card">
       <h2>Ergebnis</h2>
       <div id="resultDisplay">Noch keine Geräte hinzugefügt.</div>
-
       <button id="exportPDF">⬇️ PDF exportieren</button>
     </section>
   </main>
@@ -100,44 +106,36 @@
 
   <img id="pdfLogo" src="logo-lgt-blau.jpg" alt="" style="display:none">
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script src="app.js"></script>
+  <!-- 📦 Bibliotheken -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
+  <script src="app.js" defer></script>
 
-<script>
-if ('serviceWorker' in navigator && window.top === window.self) {
-  navigator.serviceWorker.register('service-worker.js').then(reg => {
-    console.log("✅ Service Worker registriert:", reg.scope);
+  <!-- 🔧 Service Worker mit Auto-Update -->
+  <script>
+  if ("serviceWorker" in navigator && window.top === window.self) {
+    navigator.serviceWorker.register("./service-worker.js").then(reg => {
+      console.log("✅ Service Worker registriert:", reg.scope);
 
-    // Prüfen, ob eine neue Version bereitsteht
-    if (reg.waiting) {
-      console.log("🔁 Neue Version bereit – wird aktiviert …");
-      reg.waiting.postMessage('SKIP_WAITING');
-      window.location.reload();
-    }
-
-    // Wenn eine neue Version installiert wird
-    reg.addEventListener('updatefound', () => {
-      const newWorker = reg.installing;
-      newWorker.addEventListener('statechange', () => {
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          console.log("⚙️ Neue Version erkannt – automatisches Update …");
-          newWorker.postMessage('SKIP_WAITING');
-          window.location.reload();
-        }
+      // 🔁 Wenn eine neue Version entdeckt wird
+      reg.addEventListener("updatefound", () => {
+        const newSW = reg.installing;
+        if (!newSW) return;
+        newSW.addEventListener("statechange", () => {
+          if (newSW.state === "installed" && navigator.serviceWorker.controller) {
+            console.log("⚙️ Neue Version erkannt – aktiviere automatisch …");
+            newSW.postMessage("SKIP_WAITING");
+          }
+        });
       });
-    });
 
-    // Wenn der aktive Worker gewechselt wurde (nach SkipWaiting)
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log("🔄 Neuer Service Worker aktiv – Seite wird neu geladen …");
-      window.location.reload();
-    });
-
-  }).catch(err => console.log("❌ Service Worker Fehler:", err));
-} // 👈 Diese Klammer war vorher gefehlt!
-</script>
-
+      // 🔄 Wenn der neue Service Worker aktiv wird → Seite automatisch neu laden
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        console.log("🔄 Neue Version aktiv – Seite wird neu geladen …");
+        window.location.reload();
+      });
+    }).catch(err => console.log("❌ Service Worker Fehler:", err));
+  }
+  </script>
 </body>
 </html>
-

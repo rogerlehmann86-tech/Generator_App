@@ -3,7 +3,7 @@
    Auto-Update Service Worker (2025)
    ========================================= */
 
-const CACHE_NAME = "generator-app-v6.3_" + new Date().toISOString().slice(0, 10);
+const CACHE_NAME = "generator-app-v6.4_" + new Date().toISOString().slice(0, 10);
 const urlsToCache = [
   "./",
   "./index.html",
@@ -48,10 +48,16 @@ self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(request).then(response => {
       if (response) return response; // aus Cache laden
+
       return fetch(request)
         .then(networkResponse => {
           // erfolgreiche Antwort → Cache aktualisieren
-          if (networkResponse && networkResponse.status === 200 && networkResponse.type === "basic") {
+          if (
+            networkResponse &&
+            networkResponse.status === 200 &&
+            networkResponse.type === "basic" &&
+            request.url.startsWith(self.location.origin)
+          ) {
             const responseClone = networkResponse.clone();
             caches.open(CACHE_NAME).then(cache => cache.put(request, responseClone));
           }
@@ -69,5 +75,4 @@ self.addEventListener("message", event => {
     self.skipWaiting();
   }
 });
-
 

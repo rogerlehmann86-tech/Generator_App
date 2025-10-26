@@ -393,4 +393,26 @@ document.getElementById("exportPDF").addEventListener("click", async () => {
     });
   }
 });
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./service-worker.js").then(reg => {
+    console.log("✅ Service Worker registriert:", reg.scope);
+
+    // 🔁 Wenn ein Update gefunden wird:
+    reg.onupdatefound = () => {
+      const newSW = reg.installing;
+      newSW.onstatechange = () => {
+        if (newSW.state === "installed" && navigator.serviceWorker.controller) {
+          console.log("⚙️ Neue Version gefunden – aktiviere sofort");
+          newSW.postMessage("SKIP_WAITING");
+        }
+      };
+    };
+
+    // 🔄 Nach der Aktivierung: Seite automatisch neu laden
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      console.log("🔄 Neue Version aktiv – Seite wird neu geladen");
+      window.location.reload();
+    });
+  });
+}
 
