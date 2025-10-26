@@ -117,8 +117,15 @@ if ('serviceWorker' in navigator && window.top === window.self) {
         }
       });
     });
+
+    // Wenn der aktive Worker gewechselt wurde (nach SkipWaiting)
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      console.log("🔄 Neuer Service Worker aktiv – Seite wird neu geladen …");
+      window.location.reload();
+    });
+
   }).catch(err => console.log("❌ Service Worker Fehler:", err));
-}
+} // 👈 Diese Klammer war vorher gefehlt!
 </script>
 
 </body>
