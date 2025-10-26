@@ -3,7 +3,7 @@
 // Service Worker mit automatischer Update-Erkennung
 // --------------------
 
-const CACHE_NAME = 'generator-app-v6_auto';
+const CACHE_NAME = 'generator-app-v6.1_auto';
 const FILES_TO_CACHE = [
   '/',
   '/index.html',
