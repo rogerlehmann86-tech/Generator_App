@@ -108,6 +108,10 @@ const categories = {
       const detailLine = document.createElement("div");
       detailLine.className = "device-details-list";
       detailLine.textContent = facts.join(" | ");
+      const voltageSpan = document.createElement("div");
+      voltageSpan.className = "device-voltage";
+      voltageSpan.textContent = d.voltage || "";
+      textWrap.append(voltageSpan);
 
       textWrap.append(headerLine);
       if (facts.length) textWrap.append(detailLine);
@@ -122,29 +126,29 @@ const categories = {
   }
 
   // ---------- Gerät hinzufügen ----------
-  document.getElementById("addDevice").addEventListener("click", () => {
-    const name = nameEl.value.trim() || preset.value || `Gerät ${devices.length + 1}`;
-    const watt = parseFloat(wattEl.value);
-    const pf = parseFloat(pfEl.value) || 1;
-    const mult = parseFloat(multEl.value) || 1;
-    const useFactors = surgeBox.checked;
-    if (isNaN(watt) || watt <= 0) return alert("Bitte gültige Leistung angeben.");
-    const voltage = document.getElementById("voltage").value;
-    devices.push({ name, watt, pf, startMult: mult, useFactors, voltage });
-    save();
-    updateAll();
-    nameEl.value = wattEl.value = pfEl.value = multEl.value = "";
-    surgeBox.checked = false;
-    cat.value = "";
-    preset.innerHTML = '<option value="">Gerät auswählen ...</option>';
-  });
+document.getElementById("addDevice").addEventListener("click", () => {
+  const name = nameEl.value.trim() || preset.value || `Gerät ${devices.length + 1}`;
+  const watt = parseFloat(wattEl.value);
+  const pf = parseFloat(pfEl.value) || 1;
+  const mult = parseFloat(multEl.value) || 1;
+  const useFactors = surgeBox.checked;
+  const voltage = document.getElementById("voltage").value;
 
-  document.getElementById("clearDevices").addEventListener("click", () => {
-    if (!confirm("Alle Geräte wirklich löschen?")) return;
-    devices = [];
-    save();
-    updateAll();
-  });
+  if (isNaN(watt) || watt <= 0) return alert("Bitte gültige Leistung angeben.");
+  if (!voltage) return alert("Bitte Spannung auswählen (230 V oder 400 V).");
+
+  devices.push({ name, watt, pf, startMult: mult, useFactors, voltage });
+  save();
+  updateAll();
+
+  // Felder zurücksetzen
+  nameEl.value = wattEl.value = pfEl.value = multEl.value = "";
+  surgeBox.checked = false;
+  cat.value = "";
+  preset.innerHTML = '<option value="">Gerät auswählen ...</option>';
+  document.getElementById("voltage").value = ""; // Spannung zurücksetzen
+});
+
 
   // ---------- Berechnung ----------
 function computeSummary(devs) {
@@ -220,7 +224,10 @@ function computeSummary(devs) {
     <div class="box-text">
       <h3 class="box-title">Produkte Empfehlung</h3>
       <div class="box-body">
-     <span class="device-name">Generatorgröße: ${s.marketKVA.toFixed(1)} kVA (${s.needs400V ? "400 V" : "230 V"})                </span>
+    <span class="device-name">
+  Generatorgröße: ${s.marketKVA.toFixed(1)} kVA (${s.needs400V ? "400 V" : "230 V"})
+</span>
+
         <span class="click-hint">➡ Mehr Infos auf lehmann-gt.ch</span>
       </div>
     </div>
