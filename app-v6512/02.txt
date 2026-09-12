@@ -1,0 +1,76 @@
+  const manual=el('manualModeBtn').classList.contains('active');resetEntry(!manual);if(manual){el('editorTitle').textContent='Eigene Eingabe';el('editorVoltageBadge').textContent='Manuell';}
+}
+function computeSummary(){
+  const totalVA=devices.reduce((sum,d)=>sum+(d.useFactors?(Number(d.watt)/(Number(d.pf)||1))*(Number(d.startMult)||1):Number(d.watt)),0);
+  const totalKVA=totalVA/1000;const needs400V=devices.some(d=>d.voltage==='400V');const steps=[.65,.8,1,1.5,2,2.5,3,4,5,6.5,8,10,12,15,20,25,30,40,50,60,80,100];const marketKVA=steps.find(s=>s>=totalKVA)??Math.ceil(totalKVA/10)*10;
+  const rentals=[...rentalGenerators].sort((a,b)=>Number(a.kva)-Number(b.kva));const rental=rentals.find(r=>Number(r.kva)>=totalKVA&&(!needs400V||String(r.voltage_support).includes('400')))||null;
+  return{totalKVA,marketKVA,needs400V,rental};
+}
+function renderDevices(){
+  el('deviceCount').textContent=devices.length;
+  if(!devices.length){el('deviceList').innerHTML='<div class="empty-state compact-empty">Noch keine Geräte hinzugefügt.</div>';el('liveSummary').classList.add('hidden');return}
+  el('deviceList').innerHTML=devices.map(d=>`<article class="device-row"><span class="device-thumb pictogram-thumb">${iconHtml(d.icon_key||'plug')}</span><div><h3>${esc(d.name)}</h3><div class="meta">${Number(d.watt).toLocaleString('de-CH')} W · ${d.voltage}${d.useFactors?` · cos φ ${Number(d.pf).toFixed(2)} · Iₐ ${Number(d.startMult).toFixed(1)}`:''}</div></div><button class="remove-device" title="Entfernen" onclick="removeDevice('${d.id}')">×</button></article>`).join('');
+  const s=computeSummary();el('liveSummary').classList.remove('hidden');el('liveSummary').innerHTML=`<div><span>Aktueller Bedarf</span><strong>${s.totalKVA.toFixed(2)} kVA</strong></div><div><span>Empfehlung</span><strong>${s.marketKVA.toFixed(1)} kVA</strong></div>`;
+}
+window.removeDevice=id=>{devices=devices.filter(d=>d.id!==id);save();renderAll()}
+function rentalUrl(r){if(!cfg.rentalToolUrl||!r)return'';const sep=cfg.rentalToolUrl.includes('?')?'&':'?';return `${cfg.rentalToolUrl}${sep}product=${encodeURIComponent(r.slug||r.product_id||'')}`}
+function renderResult(){
+  const btn=el('exportPDF');btn.disabled=!devices.length;if(!devices.length){el('resultDisplay').innerHTML='<div class="empty-state">Fügen Sie zuerst mindestens ein Gerät hinzu.</div>';return}
+  const s=computeSummary();const rental=s.rental;const direct=rentalUrl(rental);
+  el('resultDisplay').innerHTML=`<div class="result-hero"><div><div class="result-label">Empfohlene Generatorgrösse</div><div class="mega-value">${s.marketKVA.toFixed(1)} <span>kVA</span></div><div class="result-sub light">${s.needs400V?'400 V erforderlich':'230 V ausreichend'} · berechneter Bedarf ${s.totalKVA.toFixed(2)} kVA</div></div><div class="result-check">✓</div></div><div class="result-grid result-grid-two"><article class="result-card"><div class="result-label">Ihre Verbraucher</div><div class="result-value small-value">${devices.length}</div><div class="result-sub">${devices.length===1?'Gerät':'Geräte'} gleichzeitig berücksichtigt${s.needs400V?' · inkl. 400-V-Verbraucher':''}</div></article><article class="result-card rental-result"><div class="result-label">Passendes Mietgerät</div>${rental?`<div class="rental-name">${esc(rental.name)}</div><div class="rental-spec">${Number(rental.kva).toFixed(1)} kVA / ${Number(rental.kw).toFixed(1)} kW · ${esc(rental.voltage_support)}<br>${esc(rental.fuel||'')}</div><div class="recommend-actions">${direct?`<a class="btn primary" href="${esc(direct)}">Verfügbarkeit prüfen & mieten</a>`:'<span class="btn primary disabled-look">Miettool-Verlinkung vorbereitet</span>'}</div>`:'<div class="warning">Für diesen Leistungsbedarf ist aktuell kein hinterlegtes Mietgerät gross genug. Bitte direkt anfragen.</div>'}</article></div><div class="warning">Hinweis: Die Berechnung ist eine Auswahlhilfe. Bei besonderen Lasten, Frequenzumrichtern, Schweissgeräten oder empfindlicher Elektronik sollte die Anwendung separat geprüft werden.</div>`;
+}
+
+function renderGlobalSearch(){
+ const q=(el('globalDeviceSearch')?.value||'').trim().toLowerCase(),box=el('globalSearchResults');
+ if(!box)return;
+ if(q.length<2){box.classList.add('hidden');box.innerHTML='';return}
+ const deviceHits=presets.filter(p=>p.active!==false&&(
+   (p.name||'').toLowerCase().includes(q) ||
+   (categories.find(c=>String(c.id)===String(p.category_id))?.name||'').toLowerCase().includes(q)
+ )).slice(0,10);
+ const appHits=applications.filter(a=>a.active!==false&&(
+   (a.name||'').toLowerCase().includes(q) ||
+   (a.description||'').toLowerCase().includes(q)
+ )).slice(0,6);
+ let html='';
+ if(appHits.length){
+   html+=`<div class="search-group-title"><i class="fa fa-magic"></i> Anwendungen</div>`;
+   html+=appHits.map(a=>`<button type="button" class="search-hit search-hit-application" data-app-id="${a.id}">
+     <span class="search-icon">${iconHtml(a.icon_key||'magic')}</span>
+     <span><strong>${esc(a.name)}</strong><small>${esc(a.description||'Anwendung öffnen')}</small></span>
+     <span class="search-type-badge">Anwendung</span><i class="fa fa-chevron-right"></i>
+   </button>`).join('');
+ }
+ if(deviceHits.length){
+   html+=`<div class="search-group-title"><i class="fa fa-plug"></i> Geräte</div>`;
+   html+=deviceHits.map(p=>{
+     const cat=categories.find(c=>String(c.id)===String(p.category_id));
+     return `<button type="button" class="search-hit" data-id="${p.id}">
+       <span class="search-icon">${iconHtml(deviceIcon(p))}</span>
+       <span><strong>${esc(p.name)}</strong><small>${p.watt} W · ${esc(p.voltage)}${cat?` · ${esc(cat.name)}`:''}</small></span>
+       <span class="search-type-badge device">Gerät</span><i class="fa fa-chevron-right"></i>
+     </button>`;
+   }).join('');
+ }
+ if(!html)html='<div class="search-empty">Keine passende Anwendung oder kein Gerät gefunden. Nutzen Sie „Eigene Leistung“.</div>';
+ box.innerHTML=html;
+ box.classList.remove('hidden');
+ box.querySelectorAll('.search-hit[data-id]').forEach(b=>b.onclick=()=>selectPreset(b.dataset.id,true));
+ box.querySelectorAll('.search-hit-application').forEach(b=>b.onclick=()=>{
+   const id=b.dataset.appId;
+   el('globalSearchResults').classList.add('hidden');
+   el('globalDeviceSearch').value='';
+   setApplicationMode();
+   requestAnimationFrame(()=>setTimeout(()=>openApplication(id),80));
+ });
+}
+function renderApplications(){
+ const g=el('applicationGrid'); if(!g)return;
+ g.innerHTML=applications.map(a=>`<button type="button" class="application-card ${String(a.id)===String(selectedApplicationId)?'active':''}" data-id="${a.id}"><span class="application-icon">${iconHtml(a.icon_key||'magic')}</span><span><strong>${esc(a.name)}</strong><small>${esc(a.description||'')}</small></span><i class="fa fa-chevron-right"></i></button>`).join('');
+ g.querySelectorAll('.application-card').forEach(b=>b.onclick=()=>openApplication(b.dataset.id));
+}
+
+function addPresetDirect(p,button=null){
+ if(!p)return;
+ devices.push({
+   id:crypto.randomUUID(),
