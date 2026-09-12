@@ -1,0 +1,67 @@
+      db.from('generator_applications').select('*').eq('active',true).order('sort_order'),
+      db.from('generator_application_devices').select('*').order('sort_order')
+    ]);
+    if(cr.error)throw cr.error;if(dr.error)throw dr.error;if(rr.error)throw rr.error;if(ar.error)throw ar.error;if(alr.error)throw alr.error;
+    categories=cr.data||[];presets=dr.data||[];applications=ar.data||[];applicationLinks=alr.data||[];
+    rentalGenerators=(rr.data||[]).filter(x=>x.products?.active!==false).map(x=>({...x,name:x.products.name,slug:x.products.slug}));
+    el('dataNotice').classList.add('hidden');
+  }catch(e){
+    console.warn('Generator-Stammdaten nicht erreichbar:',e);categories=fallbackCategories;presets=fallbackPresets;rentalGenerators=fallbackRentals;applications=fallbackApplications;applicationLinks=fallbackApplicationLinks;
+    notice('Die zentralen Stammdaten sind noch nicht eingerichtet oder nicht erreichbar. Es werden vorläufig die eingebauten Standardwerte verwendet.',true);
+  }
+}
+function renderLegacySelects(){
+  el('category').innerHTML='<option value="">Kategorie wählen …</option>'+categories.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  renderPresetSelect();
+}
+function renderCategories(){
+  el('categoryGrid').innerHTML=categories.map(c=>{
+    const count=presets.filter(p=>String(p.category_id)===String(c.id)).length;
+    return `<button type="button" class="category-card${String(selectedCategoryId)===String(c.id)?' active':''}" data-category="${esc(c.id)}"><span class="category-icon">${iconHtml(categoryIcon(c.name,c.icon_key),'pictogram')}</span><span class="category-copy"><strong>${esc(c.name)}</strong><small>${count} ${count===1?'Gerät':'Geräte'}</small></span><span class="category-arrow">›</span></button>`;
+  }).join('')||'<div class="empty-state">Noch keine Kategorien vorhanden.</div>';
+  el('categoryGrid').querySelectorAll('[data-category]').forEach(btn=>btn.addEventListener('click',()=>selectCategory(btn.dataset.category)));
+}
+function renderPresetSelect(){
+  const cid=selectedCategoryId||el('category')?.value||'';
+  const items=presets.filter(p=>String(p.category_id)===String(cid));
+  el('presetSelect').innerHTML='<option value="">Gerät auswählen …</option>'+items.map(p=>`<option value="${p.id}">${esc(p.name)} (${Number(p.watt)} W)</option>`).join('');
+}
+function renderPresetCards(){
+  const query=(el('deviceSearch')?.value||'').trim().toLowerCase();
+  const items=presets.filter(p=>String(p.category_id)===String(selectedCategoryId)).filter(p=>!query||String(p.name).toLowerCase().includes(query));
+  el('presetGrid').innerHTML=items.map(p=>`<article class="preset-card${String(el('presetSelect')?.value)===String(p.id)?' active':''}" data-preset-card="${esc(p.id)}"><div class="preset-image pictogram-stage">${iconHtml(deviceIcon(p),'device-pictogram')}</div><div class="preset-content"><strong>${esc(p.name)}</strong><div class="preset-data"><b>${Number(p.watt).toLocaleString('de-CH')} W</b><span>· ${esc(String(p.voltage).replace('V',' V'))}</span></div><small>${p.use_factors?`cos φ ${Number(p.power_factor??1).toFixed(2)} · Anlauf ${Number(p.start_multiplier??1).toFixed(1)}`:'Direkte Verbraucherleistung'}</small><button type="button" class="btn primary preset-select-btn" data-preset="${esc(p.id)}">Auswählen</button></div></article>`).join('')||'<div class="empty-state">Keine passenden Geräte gefunden.</div>';
+  el('presetGrid').querySelectorAll('[data-preset]').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();choosePreset(btn.dataset.preset,true)}));
+  el('presetGrid').querySelectorAll('[data-preset-card]').forEach(card=>card.addEventListener('click',()=>choosePreset(card.dataset.presetCard,true)));
+}
+function selectCategory(id){
+  selectedCategoryId=id;el('category').value=id;el('presetSelect').value='';
+  const cat=categories.find(c=>String(c.id)===String(id));
+  el('selectedCategoryText').textContent=cat?.name||'';
+  el('deviceChooser').classList.remove('hidden');el('editorCard').classList.add('hidden');
+  renderCategories();renderPresetSelect();renderPresetCards();
+  setTimeout(()=>el('deviceChooser').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+function selectedPreset(){return presets.find(p=>String(p.id)===String(el('presetSelect').value))}
+function choosePreset(id,scrollToEditor=false){
+  el('presetSelect').value=id;const p=selectedPreset();if(!p)return;
+  el('name').value=p.name;el('watt').value=p.watt;el('voltage').value=p.voltage;el('pf').value=p.power_factor??1;el('startMult').value=p.start_multiplier??1;el('startSurge').checked=!!p.use_factors;
+  el('editorTitle').textContent=p.name;el('editorVoltageBadge').textContent=String(p.voltage).replace('V',' V');
+  el('technicalDetails').open=false;syncFactors();el('editorCard').classList.remove('hidden');el('globalSearchResults')?.classList.add('hidden');
+  el('presetGrid')?.querySelectorAll('.preset-card').forEach(card=>card.classList.toggle('active',String(card.dataset.presetCard)===String(id)));
+  if(scrollToEditor)setTimeout(()=>el('editorCard').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+function setMode(manual){el('applicationMode')?.classList.add('hidden');el('applicationModeBtn')?.classList.remove('active');
+  el('presetMode').classList.toggle('hidden',manual);el('presetModeBtn').classList.toggle('active',!manual);el('manualModeBtn').classList.toggle('active',manual);
+  if(manual){selectedCategoryId='';renderCategories();resetEntry(false);el('editorTitle').textContent='Eigene Eingabe';el('editorVoltageBadge').textContent='Manuell';el('editorCard').classList.remove('hidden');}
+  else{resetEntry(false);el('editorCard').classList.add('hidden');}
+}
+function syncFactors(){el('factorFields').classList.toggle('disabled',!el('startSurge').checked)}
+function resetEntry(hideEditor=true){
+  el('presetSelect').value='';el('name').value='';el('watt').value='';el('voltage').value='';el('pf').value='1';el('startMult').value='1';el('startSurge').checked=false;el('editorVoltageBadge').textContent='';syncFactors();
+  if(hideEditor)el('editorCard').classList.add('hidden');
+  el('presetGrid')?.querySelectorAll('.preset-card').forEach(card=>card.classList.remove('active'));
+}
+function addDevice(){
+  const watt=Number(el('watt').value),voltage=el('voltage').value,pf=Number(el('pf').value)||1,mult=Number(el('startMult').value)||1;
+  if(!watt||watt<=0)return alert('Bitte eine gültige Leistung in Watt angeben.');if(!voltage)return alert('Bitte die Spannung auswählen.');if(pf<=0||pf>1)return alert('cos φ muss zwischen 0.1 und 1 liegen.');if(mult<1)return alert('Der Anlauffaktor muss mindestens 1 betragen.');
+  devices.push({id:crypto.randomUUID(),name:el('name').value.trim()||'Gerät',watt,pf,startMult:mult,useFactors:el('startSurge').checked,icon_key:(presets.find(p=>String(p.id)===String(el('presetSelect').value))?.icon_key||'plug'),voltage});save();renderAll();
