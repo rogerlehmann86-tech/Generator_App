@@ -1,0 +1,7 @@
+@import url("css-parts/00.css?v=6.5.12");
+@import url("css-parts/01.css?v=6.5.12");
+@import url("css-parts/02.css?v=6.5.12");
+@import url("css-parts/03.css?v=6.5.12");
+@import url("css-parts/04.css?v=6.5.12");
+@import url("css-parts/05.css?v=6.5.12");
+.count-bade{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;border-radius:999px;background:#e9f3fb;color:#0055a5;font-size:12px;}
