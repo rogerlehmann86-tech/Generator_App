@@ -1,0 +1,125 @@
+
+.category-card .category-arrow,
+.category-card > i:last-child,
+.application-card > i:last-child{
+  font-size:20px!important;
+  color:#9aabb9!important;
+}
+.category-card:hover .category-icon,
+.application-card:hover .application-icon{
+  background:#dceefd!important;
+}
+.category-card:hover .category-arrow,
+.category-card:hover > i:last-child,
+.application-card:hover > i:last-child{
+  color:#0055a5!important;
+}
+
+/* Anwendungsgitter wie Kategorie-Gitter */
+.application-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:12px!important;
+  margin-top:12px!important;
+}
+.application-card{
+  grid-template-columns:58px minmax(0,1fr) auto!important;
+  text-align:left!important;
+}
+
+/* Aktive Kategorie / Anwendung gleiche Sprache */
+.category-card.active,
+.category-card.selected,
+.application-card.active,
+.application-card.selected{
+  border:2px solid #0055a5!important;
+  background:#eef7ff!important;
+  box-shadow:0 8px 22px rgba(0,85,165,.12)!important;
+}
+.category-card.active .category-icon,
+.category-card.selected .category-icon,
+.application-card.active .application-icon,
+.application-card.selected .application-icon{
+  background:#0055a5!important;
+  color:#fff!important;
+}
+@media(max-width:650px){
+  .category-card,.application-card{min-height:84px!important;padding:12px 14px!important;column-gap:15px!important}
+  .category-card .category-icon,.application-card .application-icon{width:50px!important;height:50px!important;min-width:50px!important;font-size:25px!important}
+  .category-card strong,.application-card strong{font-size:15px!important}
+  .application-grid{grid-template-columns:1fr!important}
+}
+
+/* v6.5.9 – alle vorgeschlagenen Geräte einer Anwendung übernehmen */
+.application-head{
+  display:flex;
+  justify-content:space-between;
+  gap:18px;
+  align-items:flex-start;
+}
+.application-head>div{min-width:0;flex:1}
+.application-add-all{
+  min-width:190px;
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  padding:10px 13px!important;
+  border:1px solid #8bb6da!important;
+  background:#edf6fd!important;
+  color:#0055a5!important;
+  flex-shrink:0;
+}
+.application-add-all>i{font-size:20px}
+.application-add-all>span{display:flex;flex-direction:column;text-align:left;line-height:1.15}
+.application-add-all strong{font-size:13px}
+.application-add-all small{font-size:10px;color:#58758d;margin-top:3px;font-weight:500}
+.application-add-all:hover{
+  background:#0055a5!important;
+  border-color:#0055a5!important;
+  color:#fff!important;
+}
+.application-add-all:hover small{color:#dcecff}
+.application-add-all.bulk-added{
+  background:#28a745!important;
+  border-color:#28a745!important;
+  color:#fff!important;
+}
+@media(max-width:650px){
+  .application-head{flex-direction:column}
+  .application-add-all{width:100%;min-width:0}
+}
+
+/* v6.5.10 – neues blau/schwarzes Lehmann-Logo */
+.site-logo,
+.brand-logo,
+.header-logo,
+.topbar-logo,
+header img[src*="lehmann-logo"]{
+  object-fit:contain!important;
+  object-position:left center!important;
+  max-width:310px!important;
+  width:auto!important;
+  height:auto!important;
+  max-height:76px!important;
+}
+@media(max-width:650px){
+  .site-logo,
+  .brand-logo,
+  .header-logo,
+  .topbar-logo,
+  header img[src*="lehmann-logo"]{
+    max-width:235px!important;
+    max-height:62px!important;
+  }
+}
+
+/* v6.5.12 – neues LGT-Logo bewusst grösser im Header */
+.site-logo, .brand-logo, .header-logo, .topbar-logo, header img[src*="lehmann-logo"]{
+  max-width:190px!important;
+  max-height:128px!important;
+  width:auto!important; height:auto!important; object-fit:contain!important; object-position:left center!important;
+}
+.topbar{padding:10px 0!important}
+@media(max-width:650px){
+ .site-logo,.brand-logo,.header-logo,.topbar-logo,header img[src*="lehmann-logo"]{max-width:145px!important;max-height:100px!important}
+}
