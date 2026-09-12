@@ -1,0 +1,38 @@
+const cfg=window.GENERATOR_CONFIG||{};
+const isDemo=!cfg.supabaseUrl||cfg.supabaseUrl.includes('YOUR_');
+const db=isDemo?null:window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
+const el=id=>document.getElementById(id);
+let categories=[];let presets=[];let rentalGenerators=[];let applications=[];let applicationLinks=[];let selectedCategoryId='';
+let selectedApplicationId=null;let devices=JSON.parse(localStorage.getItem('generatorcalc_devices_v6')||'[]');
+const fallbackCategories=[
+  {id:'werkzeuge',name:'Werkzeuge',icon_key:'wrench',sort_order:10,active:true},{id:'haushalt',name:'Haushalt',icon_key:'home',sort_order:20,active:true},{id:'kuehlen-heizen',name:'Kühlen & Heizen',icon_key:'snowflake-o',sort_order:30,active:true},{id:'baumaschinen',name:'Baumaschinen',icon_key:'building',sort_order:40,active:true}
+];
+const fallbackPresets=[
+  ['werkzeuge','Bohrmaschine',800,.9,2.5,'230V',true,10],['werkzeuge','Winkelschleifer',1200,.85,2.5,'230V',true,20],['werkzeuge','Betonmischer',1100,.9,2.5,'400V',true,30],
+  ['haushalt','Kühlschrank',150,.8,3,'230V',true,10],['haushalt','Gefriertruhe',200,.8,3,'230V',true,20],['haushalt','Wasserkocher',1800,1,1,'230V',false,30],
+  ['kuehlen-heizen','Elektroheizung 2 kW',2000,1,1,'230V',false,10],['kuehlen-heizen','Elektroheizung 5 kW',5000,1,1,'400V',false,20],['kuehlen-heizen','Klimaanlage',2300,.8,2.5,'400V',true,30],
+  ['baumaschinen','Kompressor',1500,.85,3,'400V',true,10],['baumaschinen','Trennschleifer',2300,.85,2.5,'230V',true,20]
+].map((x,i)=>{const n=x[1].toLowerCase();const icon_key=n.includes('trenn')?'circle-o-notch':n.includes('winkel')?'cog':n.includes('bohr')?'wrench':n.includes('kompressor')?'tachometer':n.includes('kühl')||n.includes('gefrier')||n.includes('klima')?'snowflake-o':n.includes('wasserkocher')?'coffee':n.includes('heizung')?'thermometer-full':n.includes('mischer')?'refresh':'plug';return{id:'f'+i,category_id:x[0],name:x[1],watt:x[2],power_factor:x[3],start_multiplier:x[4],voltage:x[5],use_factors:x[6],sort_order:x[7],icon_key,active:true}});
+const fallbackRentals=[
+  {id:'eu20i',name:'Honda EU20i',slug:'honda-eu20i',kva:2,kw:1.6,fuel:'Benzin · Inverter',voltage_support:'230V',sort_order:10},
+  {id:'cx7000t',name:'CGM CX7000T',slug:'cgm-cx7000t',kva:7,kw:5.6,fuel:'Benzin · AVR',voltage_support:'230/400V',sort_order:20},
+  {id:'v18y',name:'CGM V18Y',slug:'cgm-v18y',kva:18,kw:16,fuel:'Diesel · stationär · AVR',voltage_support:'230/400V',sort_order:30},
+  {id:'v60f',name:'CGM V60F',slug:'cgm-v60f',kva:60,kw:48,fuel:'Diesel · stationär · AVR',voltage_support:'230/400V',sort_order:40}
+];
+
+const ICONS=[
+['plug','Strom / allgemein'],['bolt','Elektrisch'],['wrench','Werkzeug'],['cog','Maschine'],['gears','Maschinen'],['circle-o-notch','Trenn-/Drehgerät'],['tachometer','Kompressor / Motor'],['refresh','Mischer / Rotation'],['home','Haus'],['building','Gebäude'],['industry','Industrie'],['truck','LKW / Transport'],['car','Fahrzeug / Camping'],['cutlery','Gastronomie'],['coffee','Kaffee / Heissgetränk'],['glass','Getränke'],['snowflake-o','Kühlen'],['thermometer-full','Heizen'],['sun-o','Wärme / Sonne'],['tint','Wasser / Pumpe'],['shower','Wasser'],['lightbulb-o','Beleuchtung'],['television','TV / Bildschirm'],['desktop','Computer'],['laptop','Laptop'],['wifi','Netzwerk / WLAN'],['phone','Telefon'],['mobile','Mobilgerät'],['print','Drucker'],['music','Audio / Veranstaltung'],['volume-up','Lautsprecher'],['microphone','Mikrofon'],['camera','Kamera'],['video-camera','Video'],['battery-full','Batterie / Laden'],['flash','Strom'],['power-off','Stromversorgung'],['fan','Ventilator'],['leaf','Garten'],['tree','Aussen / Garten'],['fire','Kochen / Wärme'],['trash','Entsorgung'],['recycle','Recycling'],['shopping-cart','Verkauf'],['money','Kasse'],['credit-card','Kartenterminal'],['bed','Unterkunft'],['bath','Sanitär'],['cube','Gerät / Last'],['cubes','Mehrere Geräte'],['database','Server / Daten'],['server','Server'],['lock','Sicherheit'],['shield','Schutz'],['bell','Alarm'],['clock-o','Zeit'],['road','Baustelle / Strasse'],['warning','Warnung'],['first-aid','Medizin'],['heartbeat','Medizin'],['flask','Labor'],['eyedropper','Dosierung'],['paint-brush','Malen'],['scissors','Schneiden'],['paper-plane','Lüftung'],['filter','Filter'],['bars','Sonstiges'],['ellipsis-h','Weitere'],['th-large','Kategorie'],['magic','Anwendung'],['users','Personen / Event'],['briefcase','Gewerbe'],['shopping-basket','Lebensmittel'],['spoon','Küche'],['beer','Getränke'],['gamepad','Freizeit'],['bicycle','Fahrrad'],['anchor','Boot'],['map-marker','Mobil / Standort'],['umbrella','Aussenbereich'],['sign-in','Einspeisung'],['random','Verteilung']
+];
+const fallbackApplications=[
+{id:'app-home',name:'Einfamilienhaus',description:'Typische Verbraucher für Notstrom im Einfamilienhaus.',icon_key:'home',sort_order:10,active:true},
+{id:'app-food',name:'Foodtruck',description:'Typische Kühl-, Koch- und Nebenverbraucher.',icon_key:'cutlery',sort_order:20,active:true},
+{id:'app-site',name:'Baustelle',description:'Typische Elektrowerkzeuge und Baustellenverbraucher.',icon_key:'building',sort_order:30,active:true},
+{id:'app-event',name:'Veranstaltung',description:'Beleuchtung, Ton und weitere Event-Verbraucher.',icon_key:'music',sort_order:40,active:true},
+{id:'app-camp',name:'Camping / Caravan',description:'Typische 230-V-Verbraucher unterwegs.',icon_key:'car',sort_order:50,active:true}
+];
+const fallbackApplicationLinks=[];
+function iconHtml(key='plug',extra=''){return `<i class="fa fa-${esc(key||'plug')} ${extra}" aria-hidden="true"></i>`}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function notice(msg,error=false){const n=el('dataNotice');n.textContent=msg;n.className='notice'+(error?' error':'')}
+function save(){localStorage.setItem('generatorcalc_devices_v6',JSON.stringify(devices))}
+function slugifyAsset(v=''){return String(v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''
