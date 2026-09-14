@@ -1,0 +1,4 @@
+on>
+<aside class="panel selection-panel"><div class="selection-head"><div><div class="eyebrow">Ihre Auswahl</div><h2>Verbraucher</h2></div><button id="clearDevices" class="text-btn danger-text" type="button">Auswahl leeren</button></div><div id="deviceList" class="device-list"></div><div id="liveSummary" class="live-summary hidden"></div></aside></div>
+<section class="panel result-panel modern-result"><div class="section-heading"><div><span class="step">2</span><h2>Passende Generatorgrösse</h2></div></div><div id="resultDisplay"></div><button id="exportPDF" class="btn full-btn" disabled>Auswahl als PDF exportieren</button></section></main>
+<footer class="footer-note">© 2026 Lehmann Gerätetechnik GmbH</footer>
