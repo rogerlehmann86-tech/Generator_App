@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Generator-Auswahl | Lehmann Gerätetechnik</title>
+  <meta name="theme-color" content="#0055a5">
+  <link rel="manifest" href="manifest.json?v=6.5.12">
+  <link rel="icon" href="icon-192.png?v=6.5.12">
+  <link rel="apple-touch-icon" href="icon-512.png?v=6.5.12">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>body{margin:0;font-family:Arial,sans-serif;background:#f3f4f5;color:#171717}</style>
+  <script src="styles-loader.js?v=6.5.12"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap brand-row">
+      <a class="logo-brand" href="./" aria-label="Startseite"><img class="site-logo" src="lehmann-logo.png?v=6.5.12" alt="Lehmann Gerätetechnik GmbH"></a>
+      <a class="admin-link" href="admin.html">Admin</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div><div class="eyebrow">Generator-Auswahl</div><h1>Was möchten Sie betreiben?</h1><p>Wählen Sie Ihre Verbraucher aus. Die passende Generatorgrösse wird während der Auswahl automatisch berechnet.</p></div>
+      <div class="hero-accent"></div>
+    </div>
+  </section>
+
+  <main class="wrap modern-layout">
+    <div class="selection-stage">
+    <section class="panel chooser-panel">
+      <div class="section-heading modern-heading">
+        <div><span class="step">1</span><h2>Verbraucher auswählen</h2></div>
+        <p>Über Kategorien suchen oder Leistungsdaten selbst eingeben.</p>
+      </div>
+      <div id="dataNotice" class="notice hidden"></div>
+
+      <div class="global-search-wrap">
+        <label class="global-search"><i class="fa fa-search" aria-hidden="true"></i><input id="globalDeviceSearch" type="search" placeholder="Gerät suchen, z. B. Kompressor, Kühlschrank, Kaffeemaschine …" autocomplete="off"></label>
+        <div id="globalSearchResults" class="global-search-results hidden"></div>
+      </div>
+
+      <div class="choice-tabs three-tabs" role="tablist" aria-label="Art der Auswahl">
+        <button id="presetModeBtn" class="choice-tab active" type="button"><i class="fa fa-th-large"></i> Geräte</button>
+        <button id="applicationModeBtn" class="choice-tab" type="button"><i class="fa fa-magic"></i> Anwendungen</button>
+        <button id="manualModeBtn" class="choice-tab" type="button"><i class="fa fa-pencil"></i> Eigene Leistung</button>
+      </div>
+
+      <div id="presetMode">
+        <div class="chooser-label">Kategorie wählen</div>
+        <div id="categoryGrid" class="category-grid"></div>
+        <select id="category" class="legacy-hidden" aria-hidden="true"><option value="">Kategorie wählen …</option></select>
+
+        <div id="deviceChooser" class="device-chooser hidden">
+          <div class="chooser-line">
+            <div>
+              <div class="chooser-label">2. Gerät wählen</div>
+              <di

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Generator-Auswahl Admin</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"><link rel="stylesheet" href="styles.css"><link rel="icon" href="icon-192.png">
+</head>
+<body>
+<header class="topbar"><div class="wrap brand-row"><a class="logo-brand" href="index.html"><img class="site-logo" src="lehmann-logo.png?v=6.5.12" alt="Lehmann Gerätetechnik GmbH"></a><a class="admin-link" href="index.html">Zur Auswahl</a></div></header>
+<section class="hero"><div class="wrap hero-inner"><div><div class="eyebrow">Administration</div><h1>Generator-Auswahl verwalten</h1><p>Kategorien, Verbraucher-Leistungsdaten und Mietgenerator-Zuordnung zentral pflegen.</p></div><div class="hero-accent"></div></div></section>
+<main class="wrap">
+  <section id="loginPanel" class="panel login-panel admin-login">
+    <div class="login-info">
+      <div class="eyebrow">Gemeinsame Anmeldung</div>
+      <h2>Admin-Sitzung verwenden</h2>
+      <p>Die Generator-Auswahl verwendet dieselbe Supabase-Anmeldung wie das Miettool. Melden Sie sich bei Bedarf im Miettool-Admin an und prüfen Sie danach hier die Sitzung.</p>
+    </div>
+    <div class="admin-login-actions">
+      <button id="openRentalAdminBtn" class="btn">Miettool-Admin öffnen</button>
+      <button id="checkSessionBtn" class="btn primary">Anmeldung prüfen</button>
+    </div>
+  </section>
+  <div id="adminNotice" class="notice hidden"></div>
+
+  <div id="adminApp" class="hidden">
+    <div class="admin-toolbar"><button id="refreshBtn" class="btn">Aktualisieren</button><span class="spacer"></span><button id="logoutBtn" class="btn danger">Abmelden</button></div>
+
+    <section class="panel admin-section">
+      <div class="section-title"><div><h2>Gerätekategorien</h2><p>Reihenfolge und Sichtbarkeit der Kategorien.</p></div><button id="newCategoryBtn" class="btn primary">+ Kategorie</button></div>
+      <div id="categoryAdminList" class="admin-list"></div>
+    </section>
+
+    <section class="panel admin-section">
+      <div class="section-title"><div><h2>Verbraucher / Leistungsdaten</h2><p>Vorgabewerte für die Geräteauswahl. Benutzer können Werte in der Berechnung weiterhin überschreiben.</p></div><button id="newDeviceBtn" class="btn primary">+ Gerät</button></div>
+      <div id="deviceAdminList" class="admin-list"></div>
+    </section>
+
+    <section class="panel admin-section">
+      <div class="section-title"><div><h2>Mietgenerator-Empfehlungen</h2><p>Verknüpfung mit den bereits im Miettool vorhandenen Generatoren.</p></div><button id="newGeneratorBtn" class="btn primary">+ Zuordnung</button></div>
+      <div id="generatorAdminList" class="admin-list"></div>
+    </section>
+  </div>
+</main>
+
+<dialog id="categoryDialog"><form method="dialog" id="categoryForm"><button class="dialog-close" value="cancel">×</button><h2 id="categoryDialogTitle">Kategorie</h2><input type="hidden" id="categoryId"><div class="form-grid"><div class="field full"><label>Name</label><input id="categoryName" required></div><div class="field"><label>Sortierung</label><input id="categorySort" type="number" value="100"></div><label class="checkline"><input id="categoryActive" type="checkbox" checked><span><strong>Aktiv</strong></span></label></div><button type="submit" class="btn primary full-btn">Speichern</button></form></dialog>
+
+<dialog id="deviceDialog"><form method="dialog" id="deviceForm"><button class="dialog-close" value="cancel">×</button><h2 id="deviceDialogTitle">Gerät</h2><input type="hidden" id="deviceId"><div class="form-grid"><div class="field"><label>Kategorie</label><select id="deviceCategory" required></select></div><div class="field"><label>Bezeichnung</label><input id="deviceName" required></div><div class="field"><label>Leistung (W)</label><input id="deviceWatt" type="number" min="1" required></div><div class="field"><label>Spannung</label><select id="deviceVoltage"><option value="230V">230 V</option><option value="400V">400 V</option></select></div><div class="field"><label>cos φ</label><input id="devicePf" type="number" min="0.1" max="1" step="0.01" value="1"></div><div class="field"><label>Anlauffaktor Iₐ</label><input id="deviceStartMult" type="number" min="1" step="0.1" value="1"></div><div class="field"><label>Sortierung</label><input id="deviceSort" type="number" value="100"></div><label class="checkline"><input id="deviceUseFactors" type="checkbox"><span><strong>Kennwerte standardmässig aktiv</strong></span></label><label class="checkline"><input id="deviceActive" type="checkbox" checked><span><strong>Aktiv</strong></span></label></div><button type="submit" class="btn primary full-btn">Speichern</button></form></dialog>
+
+<dialog id="applicationDialog"><form id="applicationForm"><button class="dialog-close" type="button" onclick="applicationDialog.close()">×</button><h2 id="applicationDialogTitle">Anwendung</h2><input id="applicationId" type="hidden"><div class="form-grid"><div class="field"><label for="applicationName">Name</label><input id="applicationName" required></div><div class="field"><label for="applicationIcon">Piktogramm</label><select id="applicationIcon" class="icon-select"></select></div><div class="field full"><label for="applicationDescription">Beschreibung</label><input id="applicationDescription"></div><div class="field"><label for="applicationSort">Sortierung</label><input id="applicationSort" type="number" value="100"></div><label class="checkline"><input id="applicationActive" type="checkbox" checked><span><strong>Aktiv</strong></span></label><div class="field full"><label>Vorgeschlagene Geräte</label><div id="applicationDevicePicker" class="device-picker"></div></div></div><button class="btn primary full-btn" type="submit">Speichern</button></form></dialog>
+<dialog id="generatorDialog"><form method="dialog" id="generatorForm"><button class="dialog-close" value="cancel">×</button><h2 id="generatorDialogTitle">Mietgenerator</h2><input type="hidden" id="generatorId"><div class="form-grid"><div class="field full"><label>Miettool-Produkt</label><select id="generatorProduct" required></select></div><div class="field"><label>Nennleistung (kVA)</label><input id="generatorKva" type="number" min="0.1" step="0.1" required></div><div class="field"><label>Wirkleistung (kW)</label><input id="generatorKw" type="number" min="0.1" step="0.1" required></div><div class="field"><label>Spannungsunterstützung</label><select id="generatorVoltage"><option value="230V">230 V</option><option value="230/400V">230/400 V</option><option value="400V">400 V</option></select></div><div class="field"><label>Technik / Treibstoff</label><input id="generatorFuel" placeholder="Diesel · AVR"></div><div class="field"><label>Sortierung</label><input id="generatorSort" type="number" value="100"></div><label class="checkline"><input id="generatorActive" type="checkbox" checked><span><strong>Aktiv</strong></span></label></div><button type="submit" class="btn primary full-btn">Speichern</button></form></dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="admin.js"></script>
+</body></html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Generator-Auswahl Admin</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"><style>body{margin:0;font-family:Arial,sans-serif;background:#f3f4f5;color:#171717}</style><script src="styles-loader.js?v=6.5.12"></script><link rel="icon" href="icon-192.png?v=6.5.12">
+</head>
+<body>
+<header class="topbar"><div class="wrap brand-row"><a class="logo-brand" href="index.html"><img class="site-logo" src="lehmann-logo.png?v=6.5.12" alt="Lehmann Gerätetechnik GmbH"></a><a class="admin-link" href="index.html">Zur Auswahl</a></div></header>
+<section class="hero"><div class="wrap hero-inner"><div><div class="eyebrow">Administration</div><h1>Generator-Auswahl verwalten</h1><p>Kategorien, Verbraucher-Leistungsdaten und Mietgenerator-Zuordnung zentral pflegen.</p></div><div class="hero-accent"></div></div></section>
+<main class="wrap">
+  <section id="loginPanel" class="panel login-panel admin-login">
+    <div class="field grow"><label for="adminEmail">E-Mail</label><input id="adminEmail" type="email" autocomplete="username"></div>
+    <div class="field grow"><label for="adminPassword">Passwort</label><input id="adminPassword" type="password" autocomplete="current-password"></div>
+    <button id="loginBtn" class="btn primary">Anmelden</button>
+  </section>
+  <div id="adminNotice" class="notice hidden"></div>
+
+  <div id="adminApp" class="hidden">
+    <div class="admin-toolbar"><button id="refreshBtn" class="btn">Aktualisieren</button><span class="spacer"></span><button id="logoutBtn" class="btn danger">Abmelden</button></div>
+
+    <section class="panel admin-section">
+      <div class="section-title"><div><h2>Gerätekategorien</h2><p>Reihenfolge und Sichtbarkeit der Kategorien.</p></div><button id="newCategoryBtn" class="btn primary">+ Kategorie</button></div>
+      <div id="categoryAdminList" class="admin-list"></div>
+    </section>
+
+    <section class="panel admin-section">
+      <div class="section-title"><div><h2>Verbraucher / Leistungsdaten</h2><p>Vorgabewerte für die Geräteauswahl. Benutzer können Werte in der Berechnung weiterhin überschreiben.</p></div><button id="newDeviceBtn" class="btn primary">+ Gerät</button></div>
+      <div id="deviceAdminList" class="admin-list"></div>
+    </section>
+
+    <section class="panel admin-section">
+      <div class="section-title"><div><h2>Mietgenerator-Empfehlungen</h2><p>Verknüpfung mit den bereits im Miettool vorhandenen Generatoren.</p></div><button id="newGeneratorBtn" class="btn primary">+ Zuordnung</button></div>
+      <div id="generatorAdminList" class="admin-list"></div>
+    </section>
+  </div>
+</main>
+
+<dialog id="categoryDialog"><form method="dialog" id="categoryForm"><button class="dialog-close" value="cancel">×</button><h2 id="categoryDialogTitle">Kategorie</h2><input type="hidden" id="categoryId"><div clas

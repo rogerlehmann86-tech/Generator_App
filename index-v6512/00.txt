@@ -9,7 +9,8 @@
   <link rel="icon" href="icon-192.png?v=6.5.12">
   <link rel="apple-touch-icon" href="icon-512.png?v=6.5.12">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="styles.css">
+  <style>body{margin:0;font-family:Arial,sans-serif;background:#f3f4f5;color:#171717}</style>
+  <script src="styles-loader.js?v=6.5.12"></script>
 </head>
 <body>
   <header class="topbar">
@@ -71,55 +72,3 @@
         <div id="applicationDevices" class="application-devices hidden"></div>
       </div>
 
-      <div id="editorCard" class="editor-card hidden">
-        <div class="editor-top">
-          <div><div class="chooser-label">3. Leistungsdaten prüfen</div><h3 id="editorTitle">Gerät</h3></div>
-          <span id="editorVoltageBadge" class="voltage-badge"></span>
-        </div>
-        <div class="form-grid compact-grid">
-          <div class="field"><label for="name">Bezeichnung</label><input id="name" type="text" placeholder="z. B. Trennschleifer"></div>
-          <div class="field"><label for="watt">Leistung</label><div class="unit-input"><input id="watt" type="number" min="1" step="1" placeholder="2300"><span>W</span></div></div>
-          <div class="field"><label for="voltage">Spannung *</label><select id="voltage" required><option value="">Bitte wählen …</option><option value="230V">230 V</option><option value="400V">400 V (Drehstrom)</option></select></div>
-        </div>
-
-        <details class="technical-details" id="technicalDetails">
-          <summary>Leistungsdaten anzeigen / ändern</summary>
-          <div class="factor-box">
-            <label class="checkline"><input type="checkbox" id="startSurge"><span><strong>Betriebs- und Anlaufkennwerte berücksichtigen</strong><small>Für Motoren, Kompressoren, Kühlgeräte usw.</small></span></label>
-            <div id="factorFields" class="factor-fields">
-              <div class="field"><label for="pf">Leistungsfaktor cos φ</label><input id="pf" type="number" step="0.01" min="0.1" max="1" value="1"></div>
-              <div class="field"><label for="startMult">Anlauffaktor Iₐ</label><input id="startMult" type="number" step="0.1" min="1" value="1"></div>
-            </div>
-          </div>
-        </details>
-        <button id="addDevice" class="btn primary full-btn add-main">Zur Berechnung hinzufügen</button>
-      </div>
-    </section>
-
-    <aside class="panel selection-panel">
-      <div class="selection-head">
-        <div><div class="eyebrow">Ihre Auswahl</div><h2>Verbraucher <span id="deviceCount" class="count-bade">0</span></h2></div>
-        <button id="clearDevices" class="text-btn danger-text" type="button">Alle löschen</button>
-      </div>
-      <div id="deviceList" class="device-list"><div class="empty-state compact-empty">Noch keine Geräte hinzugefügt.</div></div>
-      <div id="liveSummary" class="live-summary hidden"></div>
-    </aside>
-    </div>
-
-    <section class="panel result-panel modern-result">
-      <div class="section-heading"><div><span class="step">2</span><h2>Passende Generatorgrösse</h2></div><p>Die Empfehlung passt sich automatisch an Ihre aktuelle Auswahl an.</p></div>
-      <div id="resultDisplay"><div class="empty-state">Fügen Sie zuerst mindestens ein Gerät hinzu.</div></div>
-      <button id="exportPDF" class="btn full-btn" disabled>Auswahl als PDF exportieren</button>
-    </section>
-  </main>
-
-  <footer class="footer-note">© 2026 Lehmann Gerätetechnik GmbH · Generator-Auswahl</footer>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script src="config.js"></script>
-  <script src="app.js"></script>
-  <script>
-    if ('serviceWorker' in navigator && window.top === window.self) navigator.serviceWorker.register('./service-worker.js').catch(console.warn);
-  </script>
-</body>
-</html>

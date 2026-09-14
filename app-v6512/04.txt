@@ -1,0 +1,31 @@
+   box.innerHTML=`<div class="inline-editor-success"><i class="fa fa-check-circle"></i><div><strong>${esc(custom.name)} hinzugefügt</strong><span>${custom.watt.toLocaleString('de-CH')} W · ${esc(custom.voltage)}</span></div></div>`;
+   setTimeout(()=>box.classList.add('hidden'),1100);
+ };
+ const editorTop=box.getBoundingClientRect().top+window.scrollY-24;
+ window.scrollTo({top:editorTop,behavior:'smooth'});
+}
+function suggestApplicationDevices(name=''){
+ const n=name.toLowerCase();
+ if(n.includes('haus'))return presets.filter(p=>/kühl|gefrier|wasserkocher|heizung|klima/i.test(p.name)).slice(0,8);
+ if(n.includes('food'))return presets.filter(p=>/kühl|gefrier|wasserkocher/i.test(p.name)).slice(0,8);
+ if(n.includes('bau'))return presets.filter(p=>/bohr|schleifer|mischer|kompressor/i.test(p.name)).slice(0,8);
+ return presets.slice(0,8);
+}
+function setApplicationMode(){
+ el('presetModeBtn').classList.remove('active');el('manualModeBtn').classList.remove('active');el('applicationModeBtn').classList.add('active');
+ el('presetMode').classList.add('hidden');el('applicationMode').classList.remove('hidden');el('editorCard').classList.add('hidden');renderApplications();
+}
+function renderAll(){renderDevices();renderResult()}
+async function exportPDF(){
+  if(!devices.length)return;const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});const s=computeSummary();doc.setFillColor(23,23,23);doc.rect(0,0,210,34,'F');doc.setFillColor(0,85,165);doc.rect(0,34,210,3,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text('Generator-Auswahl',15,16);doc.setFontSize(10);doc.setFont('helvetica','normal');doc.text('Lehmann Gerätetechnik GmbH',15,24);let y=48;doc.setTextColor(30);doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text('Verbraucher',15,y);y+=8;doc.setFont('helvetica','normal');doc.setFontSize(10);devices.forEach((d,i)=>{doc.text(`${i+1}. ${d.name} – ${d.watt} W – ${d.voltage}${d.useFactors?` – cos phi ${Number(d.pf).toFixed(2)} – Ia ${Number(d.startMult).toFixed(1)}`:''}`,17,y);y+=6;if(y>250){doc.addPage();y=20}});y+=6;doc.setFont('helvetica','bold');doc.setFontSize(13);doc.text(`Gesamtleistungsbedarf: ${s.totalKVA.toFixed(2)} kVA`,15,y);y+=8;doc.text(`Empfohlene Generatorgrösse: ${s.marketKVA.toFixed(1)} kVA (${s.needs400V?'400 V':'230 V'})`,15,y);y+=8;if(s.rental)doc.text(`Mietgeräte-Empfehlung: ${s.rental.name} – ${Number(s.rental.kva).toFixed(1)} kVA`,15,y);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(110);doc.text(`Erstellt am ${new Date().toLocaleDateString('de-CH')} · www.lehmann-gt.ch`,15,286);doc.save('Generator-Auswahl.pdf');
+}
+el('presetModeBtn').addEventListener('click',()=>setMode(false));
+el('manualModeBtn').addEventListener('click',()=>setMode(true));el('applicationModeBtn').addEventListener('click',setApplicationMode);el('globalDeviceSearch').addEventListener('input',renderGlobalSearch);
+el('changeCategory').addEventListener('click',()=>{selectedCategoryId='';el('deviceChooser').classList.add('hidden');el('editorCard').classList.add('hidden');renderCategories();el('categoryGrid').scrollIntoView({behavior:'smooth',block:'center'})});
+el('startSurge').addEventListener('change',syncFactors);
+el('voltage').addEventListener('change',()=>{if(!el('manualModeBtn').classList.contains('active'))el('editorVoltageBadge').textContent=el('voltage').value?el('voltage').value.replace('V',' V'):''});
+el('addDevice').addEventListener('click',addDevice);
+el('clearDevices').addEventListener('click',()=>{if(!devices.length||confirm('Geräteliste wirklich löschen?')){devices=[];save();renderAll()}});
+el('exportPDF').addEventListener('click',exportPDF);
+el('deviceSearch')?.addEventListener('input',renderPresetCards);
+(async()=>{await loadMasterData();renderLegacySelects();renderCategories();renderApplications();syncFactors();renderAll()})();

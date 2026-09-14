@@ -1,0 +1,119 @@
+   name:p.name||'Gerät',
+   watt:Number(p.watt)||0,
+   pf:Number(p.power_factor)||1,
+   startMult:Number(p.start_multiplier)||1,
+   useFactors:!!p.use_factors,
+   icon_key:p.icon_key||'plug',
+   voltage:p.voltage||'230V'
+ });
+ save();renderAll();
+ if(button){
+   const old=button.innerHTML;
+   button.classList.add('added');
+   button.innerHTML='<span>'+iconHtml(p.icon_key||'plug')+'</span><span><strong>'+esc(p.name)+'</strong><small>'+Number(p.watt).toLocaleString('de-CH')+' W · '+esc(p.voltage||'230V')+'</small></span><span class="application-add-label"><i class="fa fa-check"></i> Hinzugefügt</span>';
+   setTimeout(()=>{button.classList.remove('added');button.innerHTML=old},1100);
+ }
+}
+function addAllApplicationDevices(ds,button=null){
+ const valid=(ds||[]).filter(Boolean);
+ if(!valid.length)return;
+ valid.forEach(p=>devices.push({
+   id:crypto.randomUUID(),
+   name:p.name||'Gerät',
+   watt:Number(p.watt)||0,
+   pf:Number(p.power_factor)||1,
+   startMult:Number(p.start_multiplier)||1,
+   useFactors:!!p.use_factors,
+   icon_key:p.icon_key||'plug',
+   voltage:p.voltage||'230V'
+ }));
+ save();renderAll();
+ if(button){
+   const original=button.innerHTML;
+   button.classList.add('bulk-added');
+   button.innerHTML='<i class="fa fa-check"></i> Alle '+valid.length+' Geräte übernommen';
+   setTimeout(()=>{button.classList.remove('bulk-added');button.innerHTML=original},1400);
+ }
+}
+function openApplication(id){
+ selectedApplicationId=id;renderApplications();
+ const a=applications.find(x=>String(x.id)===String(id)),wrap=el('applicationDevices');if(!a||!wrap)return;
+ const ids=applicationLinks.filter(l=>String(l.application_id)===String(id)).sort((x,y)=>(x.sort_order||100)-(y.sort_order||100)).map(l=>String(l.device_id));
+ let ds=ids.length?ids.map(id=>presets.find(p=>String(p.id)===id)).filter(Boolean):suggestApplicationDevices(a.name);
+ wrap.innerHTML=`<div class="application-focus-card">
+   <div class="application-head">
+     <div>
+       <div class="chooser-label">${iconHtml(a.icon_key||'magic')} ${esc(a.name)}</div>
+       <h3>Typische Verbraucher</h3>
+       <p>${esc(a.description||'Wählen Sie die Geräte, die bei Ihnen tatsächlich gleichzeitig betrieben werden.')} Sie können ein Gerät direkt übernehmen oder vorher die Leistungsdaten anpassen.</p>
+     </div>
+     <button type="button" class="btn application-add-all"><i class="fa fa-plus-circle"></i><span><strong>Alle übernehmen</strong><small>${ds.length} vorgeschlagene Geräte hinzufügen</small></span></button>
+   </div>
+   <div class="application-device-grid">
+     ${ds.map(p=>`<article class="application-device-card" data-id="${p.id}">
+       <div class="application-device-main">
+         <span class="application-device-icon">${iconHtml(deviceIcon(p))}</span>
+         <span class="application-device-copy"><strong>${esc(p.name)}</strong><small>${Number(p.watt).toLocaleString('de-CH')} W · ${esc(p.voltage)}${p.use_factors?` · cos φ ${Number(p.power_factor||1).toLocaleString('de-CH')} · Anlauf ${Number(p.start_multiplier||1).toLocaleString('de-CH')}`:''}</small></span>
+       </div>
+       <div class="application-device-actions">
+         <button type="button" class="btn app-adjust-btn" data-id="${p.id}"><i class="fa fa-sliders"></i> Anpassen</button>
+         <button type="button" class="btn primary app-add-btn" data-id="${p.id}"><i class="fa fa-plus"></i> Hinzufügen</button>
+       </div>
+     </article>`).join('')||'<div class="empty-state">Für diese Anwendung sind noch keine Geräte zugeordnet.</div>'}
+   </div>
+   <div id="applicationInlineEditor" class="application-inline-editor hidden"></div>
+ </div>`;
+ wrap.classList.remove('hidden');
+ wrap.classList.add('application-in-focus');
+ wrap.querySelector('.application-add-all')?.addEventListener('click',e=>addAllApplicationDevices(ds,e.currentTarget));
+
+
+ wrap.querySelectorAll('.app-add-btn').forEach(b=>b.onclick=()=>{
+   const p=presets.find(x=>String(x.id)===String(b.dataset.id));
+   addPresetDirect(p,b);
+ });
+ wrap.querySelectorAll('.app-adjust-btn').forEach(b=>b.onclick=()=>{
+   const p=presets.find(x=>String(x.id)===String(b.dataset.id));
+   openApplicationEditor(p,a);
+ });
+
+ requestAnimationFrame(()=>setTimeout(()=>{
+   const top=wrap.getBoundingClientRect().top+window.scrollY-22;
+   window.scrollTo({top,behavior:'smooth'});
+   wrap.classList.add('application-focus-pulse');
+   setTimeout(()=>wrap.classList.remove('application-focus-pulse'),900);
+ },80));
+}
+function openApplicationEditor(p,a){
+ const box=el('applicationInlineEditor');if(!box||!p)return;
+ box.innerHTML=`<div class="inline-editor-head">
+   <div><div class="eyebrow">Leistungsdaten anpassen</div><h3>${esc(p.name)}</h3><p>Die Änderungen gelten nur für dieses hinzugefügte Gerät und verändern die Stammdaten nicht.</p></div>
+   <button type="button" class="inline-editor-close" aria-label="Schliessen">×</button>
+ </div>
+ <div class="inline-editor-grid">
+   <div class="field"><label>Bezeichnung</label><input id="appEditName" value="${esc(p.name)}"></div>
+   <div class="field"><label>Leistung W</label><input id="appEditWatt" type="number" min="0" step="10" value="${Number(p.watt)||0}"></div>
+   <div class="field"><label>Spannung</label><select id="appEditVoltage"><option value="230V" ${p.voltage==='230V'?'selected':''}>230 V</option><option value="400V" ${p.voltage==='400V'?'selected':''}>400 V</option></select></div>
+   <div class="field"><label>cos φ</label><input id="appEditPf" type="number" min="0.1" max="1" step="0.01" value="${Number(p.power_factor)||1}"></div>
+   <div class="field"><label>Anlauffaktor</label><input id="appEditStart" type="number" min="1" step="0.1" value="${Number(p.start_multiplier)||1}"></div>
+   <label class="checkline inline-check"><input id="appEditFactors" type="checkbox" ${p.use_factors?'checked':''}><span><strong>cos φ und Anlauf berücksichtigen</strong><small>Für Motoren und andere Verbraucher mit erhöhtem Anlaufbedarf.</small></span></label>
+ </div>
+ <div class="inline-editor-actions">
+   <button type="button" class="btn" id="appEditCancel">Abbrechen</button>
+   <button type="button" class="btn primary" id="appEditAdd"><i class="fa fa-plus"></i> Angepasst hinzufügen</button>
+ </div>`;
+ box.classList.remove('hidden');
+ box.querySelector('.inline-editor-close').onclick=()=>box.classList.add('hidden');
+ el('appEditCancel').onclick=()=>box.classList.add('hidden');
+ el('appEditAdd').onclick=()=>{
+   const custom={
+     id:crypto.randomUUID(),
+     name:(el('appEditName').value||p.name).trim(),
+     watt:Number(el('appEditWatt').value)||0,
+     pf:Number(el('appEditPf').value)||1,
+     startMult:Number(el('appEditStart').value)||1,
+     useFactors:el('appEditFactors').checked,
+     icon_key:p.icon_key||'plug',
+     voltage:el('appEditVoltage').value||p.voltage||'230V'
+   };
+   devices.push(custom);save();renderAll();
