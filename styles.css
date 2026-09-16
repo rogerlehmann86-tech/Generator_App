@@ -1,7 +1,32 @@
-@import url("css-parts/00.css?v=6.5.12");
-@import url("css-parts/01.css?v=6.5.12");
-@import url("css-parts/02.css?v=6.5.12");
-@import url("css-parts/03.css?v=6.5.12");
-@import url("css-parts/04.css?v=6.5.12");
-@import url("css-parts/05.css?v=6.5.12");
+@import url("css-parts/00.css?v=6.5.13");
+@import url("css-parts/01.css?v=6.5.13");
+@import url("css-parts/02.css?v=6.5.13");
+@import url("css-parts/03.css?v=6.5.13");
+@import url("css-parts/04.css?v=6.5.13");
+@import url("css-parts/05.css?v=6.5.13");
 .count-bade{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;border-radius:999px;background:#e9f3fb;color:#0055a5;font-size:12px;}
+
+/* v6.5.13 – korrektes Generator-Selector-Logo im Header */
+.logo-brand{display:inline-flex;align-items:center;flex:0 0 auto}
+.site-logo,
+header img.site-logo{
+  display:block!important;
+  width:118px!important;
+  height:118px!important;
+  max-width:118px!important;
+  max-height:118px!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  border-radius:24px;
+}
+.topbar{padding:8px 0!important}
+@media(max-width:650px){
+  .site-logo,
+  header img.site-logo{
+    width:92px!important;
+    height:92px!important;
+    max-width:92px!important;
+    max-height:92px!important;
+    border-radius:19px;
+  }
+}
